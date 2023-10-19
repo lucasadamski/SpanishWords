@@ -4,6 +4,7 @@ using EFDataAccess.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EntityFrameworkDataAccess.Migrations
 {
     [DbContext(typeof(WordsContext))]
-    partial class WordsContextModelSnapshot : ModelSnapshot
+    [Migration("20231019130750_UpdatedNullableColumns")]
+    partial class UpdatedNullableColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,7 +71,7 @@ namespace EntityFrameworkDataAccess.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DeleteTime")
+                    b.Property<DateTime>("DeleteTime")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("LastUpdated")
@@ -128,7 +130,7 @@ namespace EntityFrameworkDataAccess.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<int?>("GenderId")
+                    b.Property<int>("GenderId")
                         .HasColumnType("int");
 
                     b.Property<int>("LexicalId")
