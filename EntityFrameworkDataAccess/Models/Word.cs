@@ -22,8 +22,9 @@ namespace EFDataAccess.Models
         public string English { get; set; }
         [Required]
         public int LexicalId { get; set; }
-        
+
         public int? GenderId { get; set; }
+
         [Required]
         public int UserId { get; set; }
     }

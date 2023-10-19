@@ -23,8 +23,8 @@ namespace EFDataAccess.Models
         public DateTime CreateDate { get; set; }
         [Required]
         public DateTime LastUpdated { get; set; }
-       
         public DateTime? DeleteTime { get; set; }
+
 
     }
 }
