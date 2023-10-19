@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,7 +22,7 @@ namespace EFDataAccess.Models
         public string English { get; set; }
         [Required]
         public int LexicalId { get; set; }
-        [Required]
+        [AllowNull]
         public int GenderId { get; set; }
         [Required]
         public int UserId { get; set; }
