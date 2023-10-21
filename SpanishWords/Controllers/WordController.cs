@@ -1,6 +1,7 @@
 ﻿using EFDataAccess.DataAccess;
 using EFDataAccess.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SpanishWords.Models;
 
 namespace SpanishWords.Controllers
@@ -9,27 +10,22 @@ namespace SpanishWords.Controllers
     {
         public IActionResult Index()
         {
-            WordViewModel sampleWord = new WordViewModel();
 
-            Word dbSampleWord = ReadWords().FirstOrDefault();
+            WordViewModel wordViewModel = new WordViewModel();
+            wordViewModel.Words = ReadWordsFromDb();
 
-            sampleWord.English = dbSampleWord.English;
-            sampleWord.Spanish = dbSampleWord.Spanish;
-            sampleWord.LexicalId = dbSampleWord.LexicalId;
-            sampleWord.GenderId = dbSampleWord.GenderId;
-            sampleWord.UserId = dbSampleWord.UserId;
-
-
-            return View(sampleWord);
+            return View(wordViewModel);
         }
 
-        private IEnumerable<Word> ReadWords()
+
+        private List<Word> ReadWordsFromDb()
         {
             using (var db = new WordsContext())
             {
                 var records = db.Words.ToList();
-                return records;
+                return records; 
             }
         }
+
     }
 }

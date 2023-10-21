@@ -1,11 +1,8 @@
 ﻿@model WordViewModel
 
 <div>
-    <h1>Words form database</h1>
-    <p>This record is loaded from the database.</p>
-    <p>English word @Model.English is @Model.Spanish in Spanish.</p>
-</div>
-
+    <h1>Words from database</h1>
+    <p>Those records are loaded from database.</p>
 <div>
     <table class="table">
         <thead>
@@ -19,14 +16,38 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <th scope="row">1</th>
-                <td>@Model.English</td>
-                <td>@Model.Spanish</td>
-                <td>@Model.GenderId</td>
-                <td>@Model.LexicalId</td>
-                <td>@Model.UserId</td>
-            </tr>
+            
+                
+
+                @{
+                    for (int i = 0; i < Model.Words.Count(); i++)
+                    {
+                    <tr>
+                        <th scope="row">@(i+1)</th>
+                        <td>@Model.Words[i].English</td>
+                        <td>@Model.Words[i].Spanish</td>
+                        <td>
+                            @switch(Model.Words[i].GenderId) {
+                                case 1: <p>Feminine</p>
+                                    ;
+                                    break;
+                                case 2:
+                                    <p>Masculine</p>
+                                    ;
+                                    break;
+                                default:
+                                    <p>N/A</p>
+                                    break;
+                            }
+                        </td>
+                        <td>@Model.Words[i].LexicalId</td> 
+                        <td>Luki</td>
+                    </tr>
+                    }
+                    
+                }
+               
+           
         </tbody>
     </table>
 </div>
