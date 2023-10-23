@@ -8,7 +8,7 @@
         <thead>
             <tr>
                 <th scope="col">#</th>
-                <th scope="col">English</th>
+                    <th scope="col"><p>English</p></th>
                 <th scope="col">Spanish</th>
                 <th scope="col">Gender</th>
                 <th scope="col">Lexical Cat</th>
@@ -24,7 +24,7 @@
                     {
                     <tr>
                         <th scope="row">@(i+1)</th>
-                        <td>@Model.Words[i].English</td>
+                        <td><p>@Model.Words[i].English</p></td>
                         <td>@Model.Words[i].Spanish</td>
                         <td>
                             @switch(Model.Words[i].GenderId) {
