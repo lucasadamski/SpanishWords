@@ -8,6 +8,13 @@ namespace SpanishWords.Controllers
 {
     public class WordController : Controller
     {
+        private WordsContext _wordsContext;
+
+        public WordController(WordsContext wordsContext)
+        {
+            _wordsContext = wordsContext;
+        }
+
         public IActionResult Index()
         {
 
@@ -15,16 +22,16 @@ namespace SpanishWords.Controllers
             wordViewModel.Words = ReadWordsFromDb();
 
             return View(wordViewModel);
+            return View();
         }
 
 
         private List<Word> ReadWordsFromDb()
         {
-            using (var db = new WordsContext())
-            {
-                var records = db.Words.ToList();
+           
+                var records = _wordsContext.Words.ToList();
                 return records; 
-            }
+            
         }
 
     }

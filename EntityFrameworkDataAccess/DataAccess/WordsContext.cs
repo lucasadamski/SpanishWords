@@ -18,7 +18,14 @@ namespace EFDataAccess.DataAccess
         public DbSet<Statistic> Statistics { get; set; }
         public DbSet<LexicalCategory> LexicalCategories { get; set; }
         public DbSet<GrammaticalGender> GrammaticalGenders { get; set; }
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
+
+        public WordsContext(DbContextOptions<WordsContext> options) :base(options)
+        {
+            
+        }
+
+
+       /*protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -26,6 +33,6 @@ namespace EFDataAccess.DataAccess
             var config = builder.Build();
 
             options.UseSqlServer(config.GetConnectionString("Default"));
-        }
+        }*/
     }
 }
