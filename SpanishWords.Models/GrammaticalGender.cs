@@ -15,5 +15,10 @@ namespace SpanishWords.Models
         [MaxLength(9)]
         [Column(TypeName = "varchar(9)")]
         public string Name { get; set; }
+
+        /***********************
+        *       Realtions     *
+        * *********************/
+        public ICollection<Word> Words { get; set; }
     }
 }

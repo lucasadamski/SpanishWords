@@ -20,11 +20,26 @@ namespace SpanishWords.Models
         [Column(TypeName = "varchar(100)")]
         public string English { get; set; }
         [Required]
-        public int LexicalId { get; set; }
+        public int LexicalCategoryId { get; set; }
 
-        public int? GenderId { get; set; }
+        public int? GrammaticalGenderId { get; set; }
 
         [Required]
         public int UserId { get; set; }
+
+        /***********************
+         *       Realtions     *
+         * *********************/
+
+        public User User { get; set; }
+        public Statistic Statistic { get; set; }
+        public GrammaticalGender GrammaticalGender { get; set; }
+        public LexicalCategory LexicalCategory { get; set; }
+
+
+
+
+
+
     }
 }

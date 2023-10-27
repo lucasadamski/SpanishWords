@@ -25,6 +25,12 @@ namespace SpanishWords.Models
         public DateTime LastUpdated { get; set; }
         public DateTime? DeleteTime { get; set; }
 
+        /***********************
+        *       Realtions     *
+        * *********************/
+        public Word Word { get; set; }
+
+
 
     }
 }

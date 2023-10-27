@@ -27,7 +27,8 @@
                         <td><p>@Model.Words[i].English</p></td>
                         <td>@Model.Words[i].Spanish</td>
                         <td>
-                            @switch(Model.Words[i].GenderId) {
+                                @switch (Model.Words[i].GrammaticalGenderId)
+                                {
                                 case 1: <p>Feminine</p>
                                     ;
                                     break;
@@ -40,7 +41,7 @@
                                     break;
                             }
                         </td>
-                        <td>@Model.Words[i].LexicalId</td> 
+                        <td>@Model.Words[i].LexicalCategoryId</td> 
                         <td>Luki</td>
                     </tr>
                     }
