@@ -1,5 +1,5 @@
 ﻿using EFDataAccess.DataAccess;
-using EFDataAccess.Models;
+using SpanishWords.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SpanishWords.Models;

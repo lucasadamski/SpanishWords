@@ -6,14 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EFDataAccess.Models
+namespace SpanishWords.Models
 {
-    public class LexicalCategory
+    public class GrammaticalGender
     {
         public int Id { get; set; }
         [Required]
-        [MaxLength(15)]
-        [Column(TypeName = "varchar(15)")]
+        [MaxLength(9)]
+        [Column(TypeName = "varchar(9)")]
         public string Name { get; set; }
     }
 }

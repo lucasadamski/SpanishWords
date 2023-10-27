@@ -1,4 +1,4 @@
-﻿using EFDataAccess.Models;
+﻿using SpanishWords.Models;
 
 namespace SpanishWords.Models
 {
