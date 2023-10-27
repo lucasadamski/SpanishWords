@@ -26,5 +26,20 @@ namespace SpanishWords.Models
 
         [Required]
         public int UserId { get; set; }
+
+        /***********************
+         *       Realtions     *
+         * *********************/
+
+        public ICollection<User> Users { get; set; }
+        public Statistic Statistic { get; set; }
+        public GrammaticalGender GrammaticalGender { get; set; }
+        public LexicalCategory LexicalCategory { get; set; }
+
+
+
+
+
+
     }
 }

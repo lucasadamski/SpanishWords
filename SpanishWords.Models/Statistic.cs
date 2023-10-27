@@ -14,6 +14,8 @@ namespace SpanishWords.Models
         [Required]
         public int WordId { get; set; }
         [Required]
+        public int UserId { get; set; }
+        [Required]
         public int TimesCorrect { get; set; }
         [Required]
         public int TimesIncorrect { get; set; }
@@ -24,6 +26,13 @@ namespace SpanishWords.Models
         [Required]
         public DateTime LastUpdated { get; set; }
         public DateTime? DeleteTime { get; set; }
+
+        /***********************
+        *       Realtions     *
+        * *********************/
+        public Word Word { get; set; }
+
+        public User User { get; set; }
 
 
     }

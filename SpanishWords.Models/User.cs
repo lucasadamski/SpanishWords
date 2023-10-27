@@ -18,5 +18,12 @@ namespace SpanishWords.Models
         [MaxLength(50)]
         public string Password { get; set; }
 
+        /***********************
+        *       Realtions     *
+        * *********************/
+
+        public ICollection<Word> Words { get; set; }
+        public ICollection<Statistic> Statistics { get; set; }
+
     }
 }
