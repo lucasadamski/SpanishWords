@@ -3,6 +3,7 @@ using SpanishWords.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SpanishWords.Models;
+using SpanishWords.Web;
 
 namespace SpanishWords.Controllers
 {
@@ -18,11 +19,17 @@ namespace SpanishWords.Controllers
         public IActionResult Index()
         {
 
-            WordViewModel wordViewModel = new WordViewModel();
+           WordViewModel wordViewModel = new WordViewModel();
             wordViewModel.Words = ReadWordsFromDb();
 
             return View(wordViewModel);
-            return View();
+
+
+            //Zaczęłem pracować nad tym kodem i go nie skończyłem, spróbuj wysłać poniższy obiekt do widoku Word Index
+
+            //TestWord testWord = new TestWord() { English = "car", Spanish = "coche", UserName = "Ziom", LexicalCategory = "Noun" };
+            //return View(testWord);
+            
         }
 
 

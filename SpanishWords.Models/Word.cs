@@ -31,7 +31,9 @@ namespace SpanishWords.Models
          *       Realtions     *
          * *********************/
 
+
         public User User { get; set; }
+
         public Statistic Statistic { get; set; }
         public GrammaticalGender GrammaticalGender { get; set; }
         public LexicalCategory LexicalCategory { get; set; }
