@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace EntityFrameworkDataAccess.Migrations
+namespace SpanishWords.EntityFramework.Migrations
 {
     [DbContext(typeof(WordsContext))]
-    [Migration("20231019143213_UpdatedNullableColumns3")]
-    partial class UpdatedNullableColumns3
+    [Migration("20231101145624_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,7 +24,7 @@ namespace EntityFrameworkDataAccess.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("EFDataAccess.Models.GrammaticalGender", b =>
+            modelBuilder.Entity("SpanishWords.Models.GrammaticalGender", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -42,7 +42,7 @@ namespace EntityFrameworkDataAccess.Migrations
                     b.ToTable("GrammaticalGenders");
                 });
 
-            modelBuilder.Entity("EFDataAccess.Models.LexicalCategory", b =>
+            modelBuilder.Entity("SpanishWords.Models.LexicalCategory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -60,7 +60,7 @@ namespace EntityFrameworkDataAccess.Migrations
                     b.ToTable("LexicalCategories");
                 });
 
-            modelBuilder.Entity("EFDataAccess.Models.Statistic", b =>
+            modelBuilder.Entity("SpanishWords.Models.Statistic", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -86,15 +86,12 @@ namespace EntityFrameworkDataAccess.Migrations
                     b.Property<int>("TimesTrained")
                         .HasColumnType("int");
 
-                    b.Property<int>("WordId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.ToTable("Statistics");
                 });
 
-            modelBuilder.Entity("EFDataAccess.Models.User", b =>
+            modelBuilder.Entity("SpanishWords.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -117,7 +114,7 @@ namespace EntityFrameworkDataAccess.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("EFDataAccess.Models.Word", b =>
+            modelBuilder.Entity("SpanishWords.Models.Word", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -130,10 +127,10 @@ namespace EntityFrameworkDataAccess.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<int?>("GenderId")
+                    b.Property<int?>("GrammaticalGenderId")
                         .HasColumnType("int");
 
-                    b.Property<int>("LexicalId")
+                    b.Property<int>("LexicalCategoryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Spanish")
@@ -141,12 +138,78 @@ namespace EntityFrameworkDataAccess.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
+                    b.Property<int>("StatisticId")
+                        .HasColumnType("int");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GrammaticalGenderId");
+
+                    b.HasIndex("LexicalCategoryId");
+
+                    b.HasIndex("StatisticId")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
                     b.ToTable("Words");
+                });
+
+            modelBuilder.Entity("SpanishWords.Models.Word", b =>
+                {
+                    b.HasOne("SpanishWords.Models.GrammaticalGender", "GrammaticalGender")
+                        .WithMany("Words")
+                        .HasForeignKey("GrammaticalGenderId");
+
+                    b.HasOne("SpanishWords.Models.LexicalCategory", "LexicalCategory")
+                        .WithMany("Words")
+                        .HasForeignKey("LexicalCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SpanishWords.Models.Statistic", "Statistic")
+                        .WithOne("Word")
+                        .HasForeignKey("SpanishWords.Models.Word", "StatisticId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SpanishWords.Models.User", "User")
+                        .WithMany("Words")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GrammaticalGender");
+
+                    b.Navigation("LexicalCategory");
+
+                    b.Navigation("Statistic");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SpanishWords.Models.GrammaticalGender", b =>
+                {
+                    b.Navigation("Words");
+                });
+
+            modelBuilder.Entity("SpanishWords.Models.LexicalCategory", b =>
+                {
+                    b.Navigation("Words");
+                });
+
+            modelBuilder.Entity("SpanishWords.Models.Statistic", b =>
+                {
+                    b.Navigation("Word")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SpanishWords.Models.User", b =>
+                {
+                    b.Navigation("Words");
                 });
 #pragma warning restore 612, 618
         }

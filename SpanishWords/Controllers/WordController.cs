@@ -2,7 +2,6 @@
 using SpanishWords.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SpanishWords.Models;
 using SpanishWords.Web;
 
 namespace SpanishWords.Controllers
@@ -20,26 +19,32 @@ namespace SpanishWords.Controllers
         {
 
            WordViewModel wordViewModel = new WordViewModel();
+
             wordViewModel.Words = ReadWordsFromDb();
 
             return View(wordViewModel);
-
-
-            //Zaczęłem pracować nad tym kodem i go nie skończyłem, spróbuj wysłać poniższy obiekt do widoku Word Index
-
-            //TestWord testWord = new TestWord() { English = "car", Spanish = "coche", UserName = "Ziom", LexicalCategory = "Noun" };
-            //return View(testWord);
             
         }
 
 
         private List<Word> ReadWordsFromDb()
         {
-           
-                var records = _wordsContext.Words.ToList();
-                return records; 
-            
+            var records = _wordsContext.Words
+                .Include(gg => gg.GrammaticalGender)
+                .Include(lc => lc.LexicalCategory)
+                .Include(u  => u.User)
+                .Include(s  => s.Statistic)
+                .ToList();
+            return records;
         }
+
+       
 
     }
 }
+
+
+
+/*
+ *     var records = _wordsContext.Words.Include(g => g.GrammaticalGender).Include(l => l.LexicalCategory).ToList();
+            return records; */

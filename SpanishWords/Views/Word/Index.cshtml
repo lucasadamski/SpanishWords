@@ -8,11 +8,12 @@
         <thead>
             <tr>
                 <th scope="col">#</th>
-                    <th scope="col"><p>English</p></th>
+                <th scope="col"><p>English</p></th>
                 <th scope="col">Spanish</th>
                 <th scope="col">Gender</th>
                 <th scope="col">Lexical Cat</th>
                 <th scope="col">User</th>
+                <th scope="col">Times Trained</th>
             </tr>
         </thead>
         <tbody>
@@ -26,23 +27,10 @@
                         <th scope="row">@(i+1)</th>
                         <td><p>@Model.Words[i].English</p></td>
                         <td>@Model.Words[i].Spanish</td>
-                        <td>
-                                @switch (Model.Words[i].GrammaticalGenderId)
-                                {
-                                case 1: <p>Feminine</p>
-                                    ;
-                                    break;
-                                case 2:
-                                    <p>Masculine</p>
-                                    ;
-                                    break;
-                                default:
-                                    <p>N/A</p>
-                                    break;
-                            }
-                        </td>
-                        <td>@Model.Words[i].LexicalCategoryId</td> 
-                        <td>Luki</td>
+                        <td>@Model.Words[i].GrammaticalGender?.Name</td>
+                        <td>@Model.Words[i].LexicalCategory?.Name</td> 
+                        <td>@Model.Words[i].User.Login</td>
+                        <td>@Model.Words[i].Statistic.TimesTrained</td>
                     </tr>
                     }
                     

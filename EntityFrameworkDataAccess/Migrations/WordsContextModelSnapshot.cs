@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace EntityFrameworkDataAccess.Migrations
+namespace SpanishWords.EntityFramework.Migrations
 {
     [DbContext(typeof(WordsContext))]
     partial class WordsContextModelSnapshot : ModelSnapshot
@@ -84,13 +84,7 @@ namespace EntityFrameworkDataAccess.Migrations
                     b.Property<int>("TimesTrained")
                         .HasColumnType("int");
 
-                    b.Property<int>("WordId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("WordId")
-                        .IsUnique();
 
                     b.ToTable("Statistics");
                 });
@@ -142,6 +136,9 @@ namespace EntityFrameworkDataAccess.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
+                    b.Property<int>("StatisticId")
+                        .HasColumnType("int");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
@@ -151,20 +148,12 @@ namespace EntityFrameworkDataAccess.Migrations
 
                     b.HasIndex("LexicalCategoryId");
 
+                    b.HasIndex("StatisticId")
+                        .IsUnique();
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Words");
-                });
-
-            modelBuilder.Entity("SpanishWords.Models.Statistic", b =>
-                {
-                    b.HasOne("SpanishWords.Models.Word", "Word")
-                        .WithOne("Statistic")
-                        .HasForeignKey("SpanishWords.Models.Statistic", "WordId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Word");
                 });
 
             modelBuilder.Entity("SpanishWords.Models.Word", b =>
@@ -179,6 +168,12 @@ namespace EntityFrameworkDataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SpanishWords.Models.Statistic", "Statistic")
+                        .WithOne("Word")
+                        .HasForeignKey("SpanishWords.Models.Word", "StatisticId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("SpanishWords.Models.User", "User")
                         .WithMany("Words")
                         .HasForeignKey("UserId")
@@ -188,6 +183,8 @@ namespace EntityFrameworkDataAccess.Migrations
                     b.Navigation("GrammaticalGender");
 
                     b.Navigation("LexicalCategory");
+
+                    b.Navigation("Statistic");
 
                     b.Navigation("User");
                 });
@@ -202,15 +199,15 @@ namespace EntityFrameworkDataAccess.Migrations
                     b.Navigation("Words");
                 });
 
+            modelBuilder.Entity("SpanishWords.Models.Statistic", b =>
+                {
+                    b.Navigation("Word")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("SpanishWords.Models.User", b =>
                 {
                     b.Navigation("Words");
-                });
-
-            modelBuilder.Entity("SpanishWords.Models.Word", b =>
-                {
-                    b.Navigation("Statistic")
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

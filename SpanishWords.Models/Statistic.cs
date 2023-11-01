@@ -12,10 +12,6 @@ namespace SpanishWords.Models
     {
         public int Id { get; set; }
         [Required]
-        public int WordId { get; set; }
-        [Required]
-        public int UserId { get; set; }
-        [Required]
         public int TimesCorrect { get; set; }
         [Required]
         public int TimesIncorrect { get; set; }
