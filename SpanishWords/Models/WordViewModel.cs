@@ -7,5 +7,7 @@ namespace SpanishWords.Models
   
         public List<Word> Words = new List<Word>();
 
+        public Word Word { get; set; } = new Word();
+
     }
 }
