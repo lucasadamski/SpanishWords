@@ -57,5 +57,13 @@ namespace SpanishWords.Web.Controllers
 
             return RedirectToAction("Index", "Word");
         }
+
+        public IActionResult Delete(int id)
+        {
+            Word word = _wordsContext.Words.Where(a => a.Id == id).FirstOrDefault();
+            _wordsContext.Words.Remove(word);
+            _wordsContext.SaveChanges();
+            return RedirectToAction("Index", "Word");
+        }
     }
 }
