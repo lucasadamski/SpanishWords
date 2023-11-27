@@ -14,12 +14,10 @@
                 <th scope="col">Lexical Cat</th>
                 <th scope="col">User</th>
                 <th scope="col">Times Trained</th>
+                <th scope="col">Action</th>
             </tr>
         </thead>
         <tbody>
-            
-                
-
                 @{
                     for (int i = 0; i < Model.Words.Count(); i++)
                     {
@@ -31,6 +29,7 @@
                         <td>@Model.Words[i].LexicalCategory?.Name</td> 
                         <td>@Model.Words[i].User.Login</td>
                         <td>@Model.Words[i].Statistic.TimesTrained</td>
+                        <td><a asp-controller="Add" asp-action="Edit" asp-route-id="@Model.Words[i].Id">Edit</a></td>
                     </tr>
                     }
                     

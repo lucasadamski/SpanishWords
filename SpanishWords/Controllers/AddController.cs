@@ -29,12 +29,33 @@ namespace SpanishWords.Web.Controllers
             wordViewModel.Word.GrammaticalGenderId = 1;
             wordViewModel.Word.LexicalCategoryId = 1;
             wordViewModel.Word.UserId = 1;
-            wordViewModel.Word.StatisticId = 13;
+            wordViewModel.Word.StatisticId = 6;
 
             _wordsContext.Add(wordViewModel.Word);
             _wordsContext.SaveChanges();
 
             return RedirectToAction("Index");
+        }
+
+        public IActionResult Edit(int id)
+        {
+            WordViewModel word = new WordViewModel();
+            word.Word = _wordsContext.Words.Where(a => a.Id == id).FirstOrDefault();
+            return View("Add", word);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(WordViewModel model)
+        {
+            model.Word.GrammaticalGenderId = 1;
+            model.Word.LexicalCategoryId = 1;
+            model.Word.UserId = 1;
+            model.Word.StatisticId = 6;
+
+            _wordsContext.Words.Update(model.Word);
+            _wordsContext.SaveChanges();
+
+            return RedirectToAction("Index", "Word");
         }
     }
 }

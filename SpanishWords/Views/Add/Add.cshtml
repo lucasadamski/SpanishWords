@@ -2,6 +2,7 @@
 
 <form method="post">
     <div class="form-group">
+        <input hidden asp-for="@Model.Word.Id">
         <label asp-for="@Model.Word.Spanish">@Model.Word.Spanish</label>
         <input asp-for="@Model.Word.Spanish">
     </div>
