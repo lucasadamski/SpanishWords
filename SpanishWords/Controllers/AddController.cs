@@ -29,7 +29,7 @@ namespace SpanishWords.Web.Controllers
             wordViewModel.Word.GrammaticalGenderId = 1;
             wordViewModel.Word.LexicalCategoryId = 1;
             wordViewModel.Word.UserId = 1;
-            wordViewModel.Word.StatisticId = 6;
+            wordViewModel.Word.StatisticId = _wordsContext.Words.OrderBy(a => a.StatisticId).LastOrDefault().StatisticId + 1;
 
             _wordsContext.Add(wordViewModel.Word);
             _wordsContext.SaveChanges();
