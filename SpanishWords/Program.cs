@@ -1,4 +1,6 @@
 using EFDataAccess.DataAccess;
+using EFDataAccess.Repositories;
+using EFDataAccess.Repositories.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 namespace SpanishWords
@@ -12,6 +14,7 @@ namespace SpanishWords
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<WordsContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+            builder.Services.AddScoped<IWordRepository, WordRepository>();
 
 
             var app = builder.Build();

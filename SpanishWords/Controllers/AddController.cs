@@ -1,4 +1,6 @@
 ﻿using EFDataAccess.DataAccess;
+using EFDataAccess.Repositories;
+using EFDataAccess.Repositories.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using SpanishWords.Models;
 
@@ -7,9 +9,11 @@ namespace SpanishWords.Web.Controllers
     public class AddController : Controller
     {
         WordsContext _wordsContext;
-        public AddController(WordsContext wordsContext)
+        private readonly IWordRepository _wordRepository;
+
+        public AddController(IWordRepository wordRepository)
         {
-            _wordsContext = wordsContext;
+            this._wordRepository = wordRepository;
         }
 
         public IActionResult Index()
@@ -29,10 +33,9 @@ namespace SpanishWords.Web.Controllers
             wordViewModel.Word.GrammaticalGenderId = 1;
             wordViewModel.Word.LexicalCategoryId = 1;
             wordViewModel.Word.UserId = 1;
-            wordViewModel.Word.StatisticId = _wordsContext.Words.OrderBy(a => a.StatisticId).LastOrDefault().StatisticId + 1;
+            wordViewModel.Word.StatisticId = _wordRepository.GetLastStaticticId() + 1;
 
-            _wordsContext.Add(wordViewModel.Word);
-            _wordsContext.SaveChanges();
+            _wordRepository.Add(wordViewModel.Word); 
 
             return RedirectToAction("Index");
         }
@@ -40,7 +43,7 @@ namespace SpanishWords.Web.Controllers
         public IActionResult Edit(int id)
         {
             WordViewModel word = new WordViewModel();
-            word.Word = _wordsContext.Words.Where(a => a.Id == id).FirstOrDefault();
+            word.Word = _wordRepository.GetWordById(id);
             return View("Add", word);
         }
 
@@ -52,17 +55,15 @@ namespace SpanishWords.Web.Controllers
             model.Word.UserId = 1;
             model.Word.StatisticId = 6;
 
-            _wordsContext.Words.Update(model.Word);
-            _wordsContext.SaveChanges();
+            _wordRepository.Edit(model.Word);
 
             return RedirectToAction("Index", "Word");
         }
 
         public IActionResult Delete(int id)
         {
-            Word word = _wordsContext.Words.Where(a => a.Id == id).FirstOrDefault();
-            _wordsContext.Words.Remove(word);
-            _wordsContext.SaveChanges();
+            Word word = _wordRepository.GetWordById(id);
+            _wordRepository.Delete(word);
             return RedirectToAction("Index", "Word");
         }
     }
