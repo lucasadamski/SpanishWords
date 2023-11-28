@@ -2,6 +2,7 @@
 using EFDataAccess.Repositories;
 using EFDataAccess.Repositories.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
+using SpanishWords.Web.Models;
 using SpanishWords.Models;
 
 namespace SpanishWords.Web.Controllers

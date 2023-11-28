@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33627.172
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpanishWords.Web", "SpanishWords\SpanishWords.Web.csproj", "{EFDC7ECB-147D-49D1-9D18-E022A77FBC3C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpanishWords.Web", "SpanishWords.Web\SpanishWords.Web.csproj", "{EFDC7ECB-147D-49D1-9D18-E022A77FBC3C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpanishWords.EntityFramework", "EntityFrameworkDataAccess\SpanishWords.EntityFramework.csproj", "{41C18E9E-0514-4B17-8A6B-9A006454D4DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpanishWords.EntityFramework", "SpanishWords.EntityFramework\SpanishWords.EntityFramework.csproj", "{41C18E9E-0514-4B17-8A6B-9A006454D4DB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpanishWords.Models", "SpanishWords.Models\SpanishWords.Models.csproj", "{8F2C245C-207B-4A4D-A427-C6B7AAEB0424}"
 EndProject

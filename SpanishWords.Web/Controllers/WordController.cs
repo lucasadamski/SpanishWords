@@ -2,9 +2,9 @@
 using SpanishWords.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SpanishWords.Web;
+using SpanishWords.Web.Models;
 
-namespace SpanishWords.Controllers
+namespace SpanishWords.Web.Controllers
 {
     public class WordController : Controller
     {

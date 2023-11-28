@@ -3,7 +3,7 @@ using EFDataAccess.Repositories;
 using EFDataAccess.Repositories.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
-namespace SpanishWords
+namespace SpanishWords.Web
 {
     public class Program
     {

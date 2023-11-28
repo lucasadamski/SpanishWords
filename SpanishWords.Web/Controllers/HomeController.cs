@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SpanishWords.Models;
+using SpanishWords.Web.Models;
 using System.Diagnostics;
 
-namespace SpanishWords.Controllers
+namespace SpanishWords.Web.Controllers
 {
     public class HomeController : Controller
     {

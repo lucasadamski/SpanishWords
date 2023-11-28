@@ -1,4 +1,4 @@
-namespace SpanishWords.Models
+namespace SpanishWords.Web.Models
 {
     public class ErrorViewModel
     {

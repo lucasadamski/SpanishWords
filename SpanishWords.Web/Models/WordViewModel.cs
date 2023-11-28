@@ -1,6 +1,6 @@
 ﻿using SpanishWords.Models;
 
-namespace SpanishWords.Models
+namespace SpanishWords.Web.Models
 {
     public class WordViewModel
     {
