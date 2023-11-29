@@ -20,6 +20,16 @@ namespace EFDataAccess.Repositories
             this._db = db;
         }
 
+        public Statistic CreateAndAddStatistic()
+        {
+            DateTime dateTimeNow = new DateTime();
+            dateTimeNow = DateTime.Now;
+            Statistic statistic = new Statistic() { CreateDate = dateTimeNow, LastUpdated = dateTimeNow, TimesCorrect = 0, TimesIncorrect = 0, TimesTrained = 0 };
+            _db.Statistics.Add(statistic);
+            _db.SaveChanges();
+            return _db.Statistics.Where(a => a == statistic).FirstOrDefault();
+        }
+
         public IEnumerable<Word> GetAllWords() => _db.Words.Include(a => a.GrammaticalGender)
                                              .Include(a => a.LexicalCategory)
                                              .Include(a => a.User)

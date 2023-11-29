@@ -28,8 +28,8 @@ namespace EFDataAccess.DataAccess
         {
             modelBuilder.Entity<User>().HasData(
                 new User { Id = 1, Login = "Luki", Password = "1234" }, //EF ma specjalne prawa i może przypisywać wartości do pól readonly/seed
-                new User { Id = 2, Login = "Zdzichu", Password = "jabol1234" },
-                new User { Id = 3, Login = "Miroslaw", Password = "karpackieMocne" }
+                new User { Id = 2, Login = "John", Password = "1234" },
+                new User { Id = 3, Login = "Iggy", Password = "1234" }
             );
 
             modelBuilder.Entity<Statistic>().HasData(

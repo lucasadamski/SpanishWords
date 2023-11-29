@@ -20,6 +20,8 @@ namespace EFDataAccess.Repositories.Infrastructure
         bool Edit(Word word);
         bool Delete(Word word);
 
+        Statistic CreateAndAddStatistic();
+
 
     }
 }

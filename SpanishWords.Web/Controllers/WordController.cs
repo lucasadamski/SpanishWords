@@ -27,11 +27,6 @@ namespace SpanishWords.Web.Controllers
             return View(wordViewModel);
             
         }
-       /* old method from AddController
-        * public IActionResult Index()
-        {
-            return View();
-        }*/
 
         public IActionResult Add()
         {
@@ -45,8 +40,7 @@ namespace SpanishWords.Web.Controllers
             wordViewModel.Word.GrammaticalGenderId = 1;
             wordViewModel.Word.LexicalCategoryId = 1;
             wordViewModel.Word.UserId = 1;
-            wordViewModel.Word.StatisticId = _wordRepository.GetLastStaticticId() + 1;
-
+            wordViewModel.Word.StatisticId = _wordRepository.CreateAndAddStatistic().Id;
             _wordRepository.Add(wordViewModel.Word);
 
             return RedirectToAction("Add");
@@ -65,7 +59,7 @@ namespace SpanishWords.Web.Controllers
             model.Word.GrammaticalGenderId = 1;
             model.Word.LexicalCategoryId = 1;
             model.Word.UserId = 1;
-            model.Word.StatisticId = 6;
+      
 
             _wordRepository.Edit(model.Word);
 
