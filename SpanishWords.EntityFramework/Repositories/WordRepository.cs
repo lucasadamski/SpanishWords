@@ -1,5 +1,6 @@
 ﻿using EFDataAccess.DataAccess;
 using EFDataAccess.Repositories.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using SpanishWords.Models;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,14 @@ namespace EFDataAccess.Repositories
         {
             this._db = db;
         }
+
+        public IEnumerable<Word> GetAllWords() => _db.Words.Include(a => a.GrammaticalGender)
+                                             .Include(a => a.LexicalCategory)
+                                             .Include(a => a.User)
+                                             .Include(a => a.Statistic)
+                                             .ToList();
+
+        
 
         public bool Add(Word word)
         {

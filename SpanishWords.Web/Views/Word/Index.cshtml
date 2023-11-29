@@ -30,8 +30,8 @@
                         <td>@Model.Words[i].LexicalCategory?.Name</td> 
                         <td>@Model.Words[i].User.Login</td>
                         <td>@Model.Words[i].Statistic.TimesTrained</td>
-                        <td><a asp-controller="Add" asp-action="Edit" asp-route-id="@Model.Words[i].Id">Edit</a></td>
-                        <td><a asp-controller="Add" asp-action="Delete" asp-route-id="@Model.Words[i].Id">Delete</a></td>
+                        <td><a asp-controller="Word" asp-action="Edit" asp-route-id="@Model.Words[i].Id">Edit</a></td>
+                        <td><a asp-controller="Word" asp-action="Delete" asp-route-id="@Model.Words[i].Id">Delete</a></td>
                     </tr>
                     }
                     

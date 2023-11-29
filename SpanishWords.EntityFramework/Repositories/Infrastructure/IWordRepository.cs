@@ -15,6 +15,8 @@ namespace EFDataAccess.Repositories.Infrastructure
         int GetLastStaticticId();
         Word GetWordById(int id);
 
+        public IEnumerable<Word> GetAllWords();
+
         bool Edit(Word word);
         bool Delete(Word word);
 
