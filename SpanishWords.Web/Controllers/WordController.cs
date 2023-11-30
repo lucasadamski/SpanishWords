@@ -5,9 +5,11 @@ using Microsoft.EntityFrameworkCore;
 using SpanishWords.Web.Models;
 using EFDataAccess.Repositories.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SpanishWords.Web.Controllers
 {
+    [Authorize]
     public class WordController : Controller
     {
         

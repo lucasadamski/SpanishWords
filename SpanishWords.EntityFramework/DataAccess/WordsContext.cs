@@ -4,14 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SpanishWords.Models;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
 
 namespace EFDataAccess.DataAccess
 {
 
 
-    public class WordsContext : DbContext
+    public class WordsContext : IdentityDbContext<IdentityUser>
     {
         public DbSet<Word> Words { get; set; }
         public DbSet<User> Users { get; set; }
@@ -19,13 +21,13 @@ namespace EFDataAccess.DataAccess
         public DbSet<LexicalCategory> LexicalCategories { get; set; }
         public DbSet<GrammaticalGender> GrammaticalGenders { get; set; }
 
-        public WordsContext(DbContextOptions<WordsContext> options) :base(options)
-        {
-            
-        }
+        //public WordsContext(DbContextOptions<WordsContext> options) : base(options) { }
+       
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<User>().HasData(
                 new User { Id = 1, Login = "Luki", Password = "1234" }, //EF ma specjalne prawa i może przypisywać wartości do pól readonly/seed
                 new User { Id = 2, Login = "John", Password = "1234" },
