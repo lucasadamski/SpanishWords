@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SpanishWords.Web.Models;
 using EFDataAccess.Repositories.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace SpanishWords.Web.Controllers
 {
@@ -20,7 +21,9 @@ namespace SpanishWords.Web.Controllers
         public IActionResult Index()
         {
 
+
            WordViewModel wordViewModel = new WordViewModel();
+
 
             wordViewModel.Words = ReadWordsFromDb();
 
@@ -30,16 +33,32 @@ namespace SpanishWords.Web.Controllers
 
         public IActionResult Add()
         {
-            WordViewModel word = new();
-            return View(word);
+            WordViewModel model = new();
+
+            model.GrammaticalGenders = _wordRepository.GetGrammaticalGenders().Select(a => new SelectListItem()
+            {
+                Text = a.Name,
+                Value = a.Id.ToString()
+            });
+
+            model.LexicalCategories = _wordRepository.GetLexicalCategories().Select(a => new SelectListItem()
+            {
+                Text = a.Name,
+                Value = a.Id.ToString()
+            });
+            return View(model);
         }
 
         [HttpPost]
         public IActionResult Add(WordViewModel wordViewModel)
         {
-            wordViewModel.Word.GrammaticalGenderId = 1;
-            wordViewModel.Word.LexicalCategoryId = 1;
-            wordViewModel.Word.UserId = 1;
+            
+            if (wordViewModel.Word.Spanish == null || wordViewModel.Word.Spanish.Trim() == "") wordViewModel.Word.Spanish = "<Empty>";
+            if (wordViewModel.Word.English == null || wordViewModel.Word.English.Trim() == "") wordViewModel.Word.English = "<Empty>";
+            wordViewModel.Word.Spanish = wordViewModel.Word.Spanish.Trim();
+            wordViewModel.Word.English = wordViewModel.Word.English.Trim();
+
+            wordViewModel.Word.UserId = 1; // TODO: dalej na stałe przypisane gdyż tym się zajmie identity/logowanie?
             wordViewModel.Word.StatisticId = _wordRepository.CreateAndAddStatistic().Id;
             _wordRepository.Add(wordViewModel.Word);
 
@@ -50,16 +69,26 @@ namespace SpanishWords.Web.Controllers
         {
             WordViewModel word = new WordViewModel();
             word.Word = _wordRepository.GetWordById(id);
+
+            word.GrammaticalGenders = _wordRepository.GetGrammaticalGenders().Select(a => new SelectListItem()
+            {
+                Text = a.Name,
+                Value = a.Id.ToString()
+            });
+            word.LexicalCategories = _wordRepository.GetLexicalCategories().Select(a => new SelectListItem()
+            {
+                Text = a.Name,
+                Value = a.Id.ToString()
+            });
+
             return View("Add", word);
         }
 
         [HttpPost]
         public IActionResult Edit(WordViewModel model)
         {
-            model.Word.GrammaticalGenderId = 1;
-            model.Word.LexicalCategoryId = 1;
-            model.Word.UserId = 1;
-      
+            
+            model.Word.UserId = 1; // TODO: użytkownik taki jaki jest obecnie
 
             _wordRepository.Edit(model.Word);
 
@@ -78,9 +107,3 @@ namespace SpanishWords.Web.Controllers
     
     }
 }
-
-
-
-/*
- *     var records = _wordsContext.Words.Include(g => g.GrammaticalGender).Include(l => l.LexicalCategory).ToList();
-            return records; */

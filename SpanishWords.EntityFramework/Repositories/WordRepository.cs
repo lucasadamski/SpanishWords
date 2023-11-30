@@ -68,6 +68,30 @@ namespace EFDataAccess.Repositories
                return _db.Words.Where(a => a.Id == id).FirstOrDefault();
         }
 
+        public IEnumerable<GrammaticalGender> GetGrammaticalGenders()
+        {
+            try
+            {
+                return _db.GrammaticalGenders.ToList();
+            }
+            catch(Exception e)
+            {
+                return new List<GrammaticalGender>();
+            }
+        }
+
+        public IEnumerable<LexicalCategory> GetLexicalCategories()
+        {
+            try
+            {
+                return _db.LexicalCategories.ToList();
+            }
+            catch (Exception e)
+            {
+                return new List<LexicalCategory>();
+            }
+        }
+
 
     }
 }

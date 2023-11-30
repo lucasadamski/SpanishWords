@@ -22,6 +22,10 @@ namespace EFDataAccess.Repositories.Infrastructure
 
         Statistic CreateAndAddStatistic();
 
+        public IEnumerable<GrammaticalGender> GetGrammaticalGenders();
+
+        public IEnumerable<LexicalCategory> GetLexicalCategories();
+
 
     }
 }
