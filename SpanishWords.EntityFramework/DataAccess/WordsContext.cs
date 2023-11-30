@@ -21,7 +21,7 @@ namespace EFDataAccess.DataAccess
         public DbSet<LexicalCategory> LexicalCategories { get; set; }
         public DbSet<GrammaticalGender> GrammaticalGenders { get; set; }
 
-        //public WordsContext(DbContextOptions<WordsContext> options) : base(options) { }
+        public WordsContext(DbContextOptions<WordsContext> options) : base(options) { }
        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
