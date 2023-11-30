@@ -68,7 +68,13 @@ namespace SpanishWords.Web.Controllers
 
         public IActionResult Delete(int id)
         {
-            Word word = _wordRepository.GetWordById(id);
+            Word? word = _wordRepository.GetWordById(id);
+            if (word == null)
+            {
+                /*TODO dać okno z ostrzeżeniem że nie można usunąć danego wyrazu (JavaScript?)*/
+                return RedirectToAction("Index", "Word");
+            }
+             
             _wordRepository.Delete(word);
             return RedirectToAction("Index", "Word");
         }

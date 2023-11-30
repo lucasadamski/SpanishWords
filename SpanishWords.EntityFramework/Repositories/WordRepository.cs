@@ -38,31 +38,33 @@ namespace EFDataAccess.Repositories
 
         
 
-        public bool Add(Word word)
+        public bool Add(Word? word)
         {
+            if (word == null) return false;
             _db.Words.Add(word);
             _db.SaveChanges();
             return true;
         }
-        public bool Edit(Word word)
+        public bool Edit(Word? word)
         {
+            if (word == null) return false;
             _db.Words.Update(word);
             _db.SaveChanges();
             return true;
         }
 
-        public bool Delete(Word word)
+        public bool Delete(Word? word)
         {
+            if (word == null) return false;
             _db.Words.Remove(word);
             _db.SaveChanges();
             return true;
         }
 
 
-        public Word GetWordById(int id)
-        {
-               return _db.Words.Where(a => a.Id == id).FirstOrDefault();
-        }
+        public Word? GetWordById(int id) => _db.Words.Where(a => a.Id == id).FirstOrDefault();
+        
+        
 
 
     }
