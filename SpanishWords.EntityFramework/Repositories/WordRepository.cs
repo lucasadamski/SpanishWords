@@ -58,10 +58,6 @@ namespace EFDataAccess.Repositories
             return true;
         }
 
-        public int GetLastStaticticId()
-        {
-            return _db.Words.OrderBy(a => a.StatisticId).LastOrDefault().StatisticId;
-        }
 
         public Word GetWordById(int id)
         {

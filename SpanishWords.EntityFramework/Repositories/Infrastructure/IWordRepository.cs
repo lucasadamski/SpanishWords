@@ -12,7 +12,6 @@ namespace EFDataAccess.Repositories.Infrastructure
     {
         bool Add(Word word);
 
-        int GetLastStaticticId();
         Word GetWordById(int id);
 
         public IEnumerable<Word> GetAllWords();

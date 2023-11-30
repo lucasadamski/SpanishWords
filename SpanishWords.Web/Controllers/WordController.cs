@@ -78,9 +78,3 @@ namespace SpanishWords.Web.Controllers
     
     }
 }
-
-
-
-/*
- *     var records = _wordsContext.Words.Include(g => g.GrammaticalGender).Include(l => l.LexicalCategory).ToList();
-            return records; */
