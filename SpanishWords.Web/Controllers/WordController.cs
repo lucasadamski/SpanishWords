@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace SpanishWords.Web.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class WordController : Controller
     {
         
