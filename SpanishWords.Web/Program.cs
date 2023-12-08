@@ -3,6 +3,7 @@ using EFDataAccess.Repositories;
 using EFDataAccess.Repositories.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using SpanishWords.Models;
 
 namespace SpanishWords.Web
 {
@@ -15,7 +16,7 @@ namespace SpanishWords.Web
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<WordsContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<WordsContext>();
+            builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<WordsContext>();
             builder.Services.AddScoped<IWordRepository, WordRepository>();
 
 

@@ -13,7 +13,7 @@ namespace EFDataAccess.DataAccess
 {
 
 
-    public class WordsContext : IdentityDbContext<IdentityUser>
+    public class WordsContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<Word> Words { get; set; }
         public DbSet<Statistic> Statistics { get; set; }
@@ -26,6 +26,9 @@ namespace EFDataAccess.DataAccess
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ApplicationUser>().Property(e => e.FirstName).HasMaxLength(250);
+            modelBuilder.Entity<ApplicationUser>().Property(e => e.LastName).HasMaxLength(250);
 
 
             modelBuilder.Entity<Statistic>().HasData(
