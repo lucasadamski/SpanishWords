@@ -25,7 +25,7 @@ namespace SpanishWords.Models
         public int? GrammaticalGenderId { get; set; }
 
         [Required]
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         [Required]
         public int StatisticId { get; set; }
 
@@ -33,8 +33,6 @@ namespace SpanishWords.Models
          *       Realtions     *
          * *********************/
 
-
-        public User User { get; set; }
 
         public Statistic Statistic { get; set; }
         public GrammaticalGender GrammaticalGender { get; set; }

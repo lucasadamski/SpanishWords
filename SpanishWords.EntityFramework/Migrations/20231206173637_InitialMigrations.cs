@@ -3,10 +3,14 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace SpanishWords.EntityFramework.Migrations
 {
-    public partial class IdentityMigration : Migration
+    /// <inheritdoc />
+    public partial class InitialMigrations : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -90,20 +94,6 @@ namespace SpanishWords.EntityFramework.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Statistics", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Users",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Login = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -222,7 +212,7 @@ namespace SpanishWords.EntityFramework.Migrations
                     English = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false),
                     LexicalCategoryId = table.Column<int>(type: "int", nullable: false),
                     GrammaticalGenderId = table.Column<int>(type: "int", nullable: true),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     StatisticId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -243,12 +233,6 @@ namespace SpanishWords.EntityFramework.Migrations
                         name: "FK_Words_Statistics_StatisticId",
                         column: x => x.StatisticId,
                         principalTable: "Statistics",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Words_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -295,29 +279,14 @@ namespace SpanishWords.EntityFramework.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Users",
-                columns: new[] { "Id", "Login", "Password" },
+                table: "Words",
+                columns: new[] { "Id", "English", "GrammaticalGenderId", "LexicalCategoryId", "Spanish", "StatisticId", "UserId" },
                 values: new object[,]
                 {
-                    { 1, "Luki", "1234" },
-                    { 2, "John", "1234" },
-                    { 3, "Iggy", "1234" }
+                    { 1, "car", 1, 1, "coche", 1, "1" },
+                    { 2, "cat", 1, 1, "gato", 2, "1" },
+                    { 3, "dog", 1, 1, "perro", 3, "1" }
                 });
-
-            migrationBuilder.InsertData(
-                table: "Words",
-                columns: new[] { "Id", "English", "GrammaticalGenderId", "LexicalCategoryId", "Spanish", "StatisticId", "UserId" },
-                values: new object[] { 1, "car", 1, 1, "coche", 1, 1 });
-
-            migrationBuilder.InsertData(
-                table: "Words",
-                columns: new[] { "Id", "English", "GrammaticalGenderId", "LexicalCategoryId", "Spanish", "StatisticId", "UserId" },
-                values: new object[] { 2, "cat", 1, 1, "gato", 2, 1 });
-
-            migrationBuilder.InsertData(
-                table: "Words",
-                columns: new[] { "Id", "English", "GrammaticalGenderId", "LexicalCategoryId", "Spanish", "StatisticId", "UserId" },
-                values: new object[] { 3, "dog", 1, 1, "perro", 3, 1 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -373,13 +342,9 @@ namespace SpanishWords.EntityFramework.Migrations
                 table: "Words",
                 column: "StatisticId",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Words_UserId",
-                table: "Words",
-                column: "UserId");
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
@@ -414,9 +379,6 @@ namespace SpanishWords.EntityFramework.Migrations
 
             migrationBuilder.DropTable(
                 name: "Statistics");
-
-            migrationBuilder.DropTable(
-                name: "Users");
         }
     }
 }

@@ -16,7 +16,6 @@ namespace EFDataAccess.DataAccess
     public class WordsContext : IdentityDbContext<IdentityUser>
     {
         public DbSet<Word> Words { get; set; }
-        public DbSet<User> Users { get; set; }
         public DbSet<Statistic> Statistics { get; set; }
         public DbSet<LexicalCategory> LexicalCategories { get; set; }
         public DbSet<GrammaticalGender> GrammaticalGenders { get; set; }
@@ -28,11 +27,6 @@ namespace EFDataAccess.DataAccess
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<User>().HasData(
-                new User { Id = 1, Login = "Luki", Password = "1234" }, //EF ma specjalne prawa i może przypisywać wartości do pól readonly/seed
-                new User { Id = 2, Login = "John", Password = "1234" },
-                new User { Id = 3, Login = "Iggy", Password = "1234" }
-            );
 
             modelBuilder.Entity<Statistic>().HasData(
                 new Statistic { Id = 1, CreateDate = new DateTime(), LastUpdated = new DateTime(), TimesCorrect = 0, TimesIncorrect = 0, TimesTrained = 0 },
@@ -64,9 +58,9 @@ namespace EFDataAccess.DataAccess
                 );
 
             modelBuilder.Entity<Word>().HasData(
-                new Word { Id = 1, Spanish = "coche", English = "car", LexicalCategoryId = 1, GrammaticalGenderId = 1, UserId = 1, StatisticId = 1},
-                new Word { Id = 2, Spanish = "gato", English = "cat", LexicalCategoryId = 1, GrammaticalGenderId = 1, UserId = 1, StatisticId = 2 },
-                new Word { Id = 3, Spanish = "perro", English = "dog", LexicalCategoryId = 1, GrammaticalGenderId = 1, UserId = 1, StatisticId = 3 }
+                new Word { Id = 1, Spanish = "coche", English = "car", LexicalCategoryId = 1, GrammaticalGenderId = 1, UserId = "1", StatisticId = 1},
+                new Word { Id = 2, Spanish = "gato", English = "cat", LexicalCategoryId = 1, GrammaticalGenderId = 1, UserId = "1", StatisticId = 2 },
+                new Word { Id = 3, Spanish = "perro", English = "dog", LexicalCategoryId = 1, GrammaticalGenderId = 1, UserId = "1", StatisticId = 3 }
                 );
         }
 

@@ -1,6 +1,7 @@
 ﻿using EFDataAccess.DataAccess;
 using EFDataAccess.Repositories.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using SpanishWords.Models;
 using System;
 using System.Collections.Generic;
@@ -30,11 +31,29 @@ namespace EFDataAccess.Repositories
             return _db.Statistics.Where(a => a == statistic).FirstOrDefault();
         }
 
-        public IEnumerable<Word> GetAllWords() => _db.Words.Include(a => a.GrammaticalGender)
-                                             .Include(a => a.LexicalCategory)
-                                             .Include(a => a.User)
-                                             .Include(a => a.Statistic)
-                                             .ToList();
+        public IEnumerable<Word> GetAllWords(string userId)
+        {
+            if (userId == null) throw new ArgumentNullException("userId");
+
+            IEnumerable<Word> result;
+
+            try
+            {
+                result = _db.Words.Include(a => a.GrammaticalGender) 
+                    .Where(a => a.UserId == userId)
+                    .Include(a => a.LexicalCategory)
+                    .Include(a => a.Statistic)
+                    .ToList();
+            }
+            catch (Exception e)
+            {
+                e.Data.Add("DebugMessage", "Error occured in GetAllWords method in WordRepository.cs");
+                throw;
+            }
+
+            return result;
+            
+        }
 
         
 

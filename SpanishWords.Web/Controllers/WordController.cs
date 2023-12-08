@@ -6,10 +6,11 @@ using SpanishWords.Web.Models;
 using EFDataAccess.Repositories.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace SpanishWords.Web.Controllers
 {
-    //[Authorize]
+    [Authorize]
     public class WordController : Controller
     {
         
@@ -27,7 +28,7 @@ namespace SpanishWords.Web.Controllers
            WordViewModel wordViewModel = new WordViewModel();
 
 
-            wordViewModel.Words = ReadWordsFromDb();
+            wordViewModel.Words = _wordRepository.GetAllWords(User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList(); //string z userId
 
             return View(wordViewModel);
             
@@ -60,7 +61,7 @@ namespace SpanishWords.Web.Controllers
             wordViewModel.Word.Spanish = wordViewModel.Word.Spanish.Trim();
             wordViewModel.Word.English = wordViewModel.Word.English.Trim();
 
-            wordViewModel.Word.UserId = 1; // TODO: dalej na stałe przypisane gdyż tym się zajmie identity/logowanie?
+            wordViewModel.Word.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);  //przypisanie id z Identity
             wordViewModel.Word.StatisticId = _wordRepository.CreateAndAddStatistic().Id;
             _wordRepository.Add(wordViewModel.Word);
 
@@ -89,8 +90,8 @@ namespace SpanishWords.Web.Controllers
         [HttpPost]
         public IActionResult Edit(WordViewModel model)
         {
-            
-            model.Word.UserId = 1; // TODO: użytkownik taki jaki jest obecnie
+
+            model.Word.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             _wordRepository.Edit(model.Word);
 
@@ -110,8 +111,6 @@ namespace SpanishWords.Web.Controllers
             return RedirectToAction("Index", "Word");
         }
 
-
-        private List<Word> ReadWordsFromDb() => _wordRepository.GetAllWords().ToList();
     
     }
 }

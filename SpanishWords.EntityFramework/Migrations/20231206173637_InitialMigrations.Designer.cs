@@ -12,17 +12,18 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace SpanishWords.EntityFramework.Migrations
 {
     [DbContext(typeof(WordsContext))]
-    [Migration("20231130143313_IdentityMigration")]
-    partial class IdentityMigration
+    [Migration("20231206173637_InitialMigrations")]
+    partial class InitialMigrations
     {
+        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.21")
+                .HasAnnotation("ProductVersion", "7.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -57,7 +58,7 @@ namespace SpanishWords.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -147,7 +148,7 @@ namespace SpanishWords.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -232,7 +233,7 @@ namespace SpanishWords.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -262,7 +263,7 @@ namespace SpanishWords.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -297,7 +298,7 @@ namespace SpanishWords.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
@@ -459,56 +460,13 @@ namespace SpanishWords.EntityFramework.Migrations
                         });
                 });
 
-            modelBuilder.Entity("SpanishWords.Models.User", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Login")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Login = "Luki",
-                            Password = "1234"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Login = "John",
-                            Password = "1234"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Login = "Iggy",
-                            Password = "1234"
-                        });
-                });
-
             modelBuilder.Entity("SpanishWords.Models.Word", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("English")
                         .IsRequired()
@@ -529,8 +487,9 @@ namespace SpanishWords.EntityFramework.Migrations
                     b.Property<int>("StatisticId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -540,8 +499,6 @@ namespace SpanishWords.EntityFramework.Migrations
 
                     b.HasIndex("StatisticId")
                         .IsUnique();
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Words");
 
@@ -554,7 +511,7 @@ namespace SpanishWords.EntityFramework.Migrations
                             LexicalCategoryId = 1,
                             Spanish = "coche",
                             StatisticId = 1,
-                            UserId = 1
+                            UserId = "1"
                         },
                         new
                         {
@@ -564,7 +521,7 @@ namespace SpanishWords.EntityFramework.Migrations
                             LexicalCategoryId = 1,
                             Spanish = "gato",
                             StatisticId = 2,
-                            UserId = 1
+                            UserId = "1"
                         },
                         new
                         {
@@ -574,7 +531,7 @@ namespace SpanishWords.EntityFramework.Migrations
                             LexicalCategoryId = 1,
                             Spanish = "perro",
                             StatisticId = 3,
-                            UserId = 1
+                            UserId = "1"
                         });
                 });
 
@@ -647,19 +604,11 @@ namespace SpanishWords.EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SpanishWords.Models.User", "User")
-                        .WithMany("Words")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("GrammaticalGender");
 
                     b.Navigation("LexicalCategory");
 
                     b.Navigation("Statistic");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SpanishWords.Models.GrammaticalGender", b =>
@@ -676,11 +625,6 @@ namespace SpanishWords.EntityFramework.Migrations
                 {
                     b.Navigation("Word")
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("SpanishWords.Models.User", b =>
-                {
-                    b.Navigation("Words");
                 });
 #pragma warning restore 612, 618
         }
