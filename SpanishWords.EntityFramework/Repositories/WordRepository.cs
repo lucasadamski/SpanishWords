@@ -34,8 +34,6 @@ namespace EFDataAccess.Repositories
 
         public IEnumerable<Word> GetAllWords(string userId)
         {
-            if (userId == null) throw new ArgumentNullException("userId");
-
             IEnumerable<Word> result;
 
             try
@@ -53,21 +51,18 @@ namespace EFDataAccess.Repositories
             }
 
             return result;
-            
         }
 
         
 
         public bool Add(Word? word)
         {
-            if (word == null) return false;
             _db.Words.Add(word);
             _db.SaveChanges();
             return true;
         }
         public bool Edit(Word? word)
         {
-            if (word == null) return false;
             _db.Words.Update(word);
             _db.SaveChanges();
             return true;
@@ -75,7 +70,6 @@ namespace EFDataAccess.Repositories
 
         public bool Delete(Word? word)
         {
-            if (word == null) return false;
             _db.Words.Remove(word);
             _db.SaveChanges();
             return true;
@@ -85,7 +79,6 @@ namespace EFDataAccess.Repositories
         public Word? GetWordById(int id) => _db.Words.Where(a => a.Id == id).FirstOrDefault();
         
         
-
         public IEnumerable<GrammaticalGender> GetGrammaticalGenders()
         {
             try
@@ -115,7 +108,6 @@ namespace EFDataAccess.Repositories
             if (_db.Words == null || _db.Words.Count() < 1) throw new InvalidDataException(); 
             else return (_db.Words.ToList())[RandomNumberGenerator.GetInt32(_db.Words.Count())];
         }
-
 
     }
 }
