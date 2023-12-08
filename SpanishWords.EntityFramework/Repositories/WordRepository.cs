@@ -6,6 +6,7 @@ using SpanishWords.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -107,6 +108,12 @@ namespace EFDataAccess.Repositories
             {
                 return new List<LexicalCategory>();
             }
+        }
+
+        public Word GetRandomWord()
+        {
+            if (_db.Words == null || _db.Words.Count() < 1) throw new InvalidDataException(); 
+            else return (_db.Words.ToList())[RandomNumberGenerator.GetInt32(_db.Words.Count())];
         }
 
 

@@ -25,6 +25,8 @@ namespace EFDataAccess.Repositories.Infrastructure
 
         public IEnumerable<LexicalCategory> GetLexicalCategories();
 
+        public Word GetRandomWord();
+
 
     }
 }

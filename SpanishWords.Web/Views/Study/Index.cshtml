@@ -1,0 +1,16 @@
+﻿@model StudyViewModel
+
+
+<h2 class="alert-heading">@Model.RandomWord.English</h2>
+<form method="post">
+    <div class="form-group">
+        <input hidden asp-for="@Model.RandomWord.Id"/>
+        <input hidden asp-for="@Model.RandomWord.Spanish"/>
+        <input hidden asp-for="@Model.RandomWord.English"/>
+        <label asp-for="@Model.Answer">Translate @Model.RandomWord.English to Spanish:</label>
+        <input asp-for="@Model.Answer" autofocus value="">
+    </div>
+    <button type="submit">Check answer</button>
+</form>
+
+<a asp-controller="Home" asp-action="Index"><button class="btn btn-primary">Cancel study session.</button></a>
