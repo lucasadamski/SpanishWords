@@ -1,12 +1,29 @@
 ﻿@model StudyViewModel
 
 
-<h2 class="alert-heading">@Model.RandomWord.English</h2>
+
+<h2 class="alert-heading">@Model.RandomWord.English</h2> <!--- Ta propercja też jest ze starą wartością RandomWord --->
+
 <form method="post">
     <div class="form-group">
-        <input hidden asp-for="@Model.RandomWord.Id"/>
-        <input hidden asp-for="@Model.RandomWord.Spanish"/>
-        <input hidden asp-for="@Model.RandomWord.English"/>
+        @for (int i = 0; i < Model.WordsToAnswer.Count(); i++) 
+        {
+            <input hidden asp-for="@Model.WordsToAnswer[i].English" />
+            <input hidden asp-for="@Model.WordsToAnswer[i].Spanish" />
+            <input hidden asp-for="@Model.WordsToAnswer[i].Id" />
+            <input hidden asp-for="@Model.WordsToAnswer[i].GrammaticalGenderId" />
+            <input hidden asp-for="@Model.WordsToAnswer[i].LexicalCategoryId" />
+        }
+
+        @for (int i = 0; i < Model.IndexesOfWordsAnswered.Count(); i++) 
+        {
+            <input hidden asp-for="@Model.IndexesOfWordsAnswered[i]" />
+        }
+        <input hidden asp-for="@Model.RandomWord.Id" />                 <!-- Te 3 pola są generowane ze starą wartością cały czas (wartość z pierwszego generowania formularza) Wiem z debuggera w kontrolerze że  forularz dostaj aktualną propercję.-->
+        <input hidden asp-for="@Model.RandomWord.Spanish" />
+        <input hidden asp-for="@Model.RandomWord.English" />
+       
+
         <label asp-for="@Model.Answer">Translate @Model.RandomWord.English to Spanish:</label>
         <input asp-for="@Model.Answer" autofocus value="">
     </div>
@@ -14,3 +31,5 @@
 </form>
 
 <a asp-controller="Home" asp-action="Index"><button class="btn btn-primary">Cancel study session.</button></a>
+
+

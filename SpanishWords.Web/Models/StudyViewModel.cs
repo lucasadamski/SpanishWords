@@ -6,5 +6,11 @@ namespace SpanishWords.Web.Models
     {
         public Word RandomWord { get; set; }
         public string Answer { get; set; }
+
+       
+
+        public List<Word> WordsToAnswer { get; set; }
+
+        public List<int> IndexesOfWordsAnswered { get; set; } = new List<int>();
     }
 }

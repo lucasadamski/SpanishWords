@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.FlowAnalysis.DataFlow;
 using SpanishWords.Models;
 using SpanishWords.Web.Models;
+using System.Security.Claims;
+using System.Security.Cryptography;
 
 
 /*
@@ -31,24 +33,60 @@ namespace SpanishWords.Web.Controllers
         }
         public IActionResult Index()
         {
-            StudyViewModel study = new StudyViewModel();
-            study.RandomWord = _wordRepository.GetRandomWord();
-            study.Answer = "";
-            return View(study);
-        }
 
+            /*******
+             *  User aswers the collection of words. Contorller will send random word which was not answered yet (the WordsToAnswer index is 
+             *  not present in IndexesOfAnsweredWords list). When the number of items in IndexesOfAnsweredWords is the same as number of items in
+             *  WordsToAnswer, then it means that all the words has been aswered and the Study Session is terminated.
+             * *****/
+
+
+            StudyViewModel study1 = new StudyViewModel();
+            //populates list of WordsToAnswer for study1 Session, based on specific User
+            study1.WordsToAnswer = _wordRepository.GetAllWords(User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList();
+            //generated randomNumber for the first Word
+            int _randomNumber = RandomNumberGenerator.GetInt32(study1.WordsToAnswer.Count() - 1);
+            study1.IndexesOfWordsAnswered.Add(_randomNumber);
+            study1.RandomWord = new Word();
+            study1.RandomWord.English = study1.WordsToAnswer[_randomNumber].English;
+            study1.RandomWord.Spanish = study1.WordsToAnswer[_randomNumber].Spanish;
+            study1.RandomWord.Id = study1.WordsToAnswer[_randomNumber].Id;
+            study1.Answer = "";
+
+            return View(study1);
+        }
 
         [HttpPost]
         public IActionResult Index(StudyViewModel study)
         {
-            if (study == null) throw new InvalidDataException();
 
+            int _anotherRadomNumber = default;
+            study.Answer = study.Answer.Trim();
+            if (study == null || study.Answer == null || study.Answer == "")  throw new InvalidDataException();
 
             if (study.RandomWord.Spanish == study.Answer)
             {
-
                 StudyViewModel nextStudyWord = new StudyViewModel();
-                nextStudyWord.RandomWord =  _wordRepository.GetRandomWord();
+                nextStudyWord.IndexesOfWordsAnswered = study.IndexesOfWordsAnswered;
+                nextStudyWord.WordsToAnswer = study.WordsToAnswer;
+                nextStudyWord.RandomWord = new Word();
+                //If every words in collection has been answered then terminate the study session
+                if(nextStudyWord.IndexesOfWordsAnswered.Count() == nextStudyWord.WordsToAnswer.Count())
+                {
+                    //Zakończenie testu
+                    return View("Home"); //?
+                }
+                //Generate random number until it's the one that has not been already answered
+                while (true)
+                {
+                    _anotherRadomNumber = RandomNumberGenerator.GetInt32(nextStudyWord.WordsToAnswer.Count() - 1);
+                    if (nextStudyWord.IndexesOfWordsAnswered.Contains(_anotherRadomNumber) == true) continue;
+                    else break;
+                }
+                nextStudyWord.IndexesOfWordsAnswered.Add(_anotherRadomNumber);
+                nextStudyWord.RandomWord.English = nextStudyWord.WordsToAnswer[_anotherRadomNumber].English;
+                nextStudyWord.RandomWord.Spanish = nextStudyWord.WordsToAnswer[_anotherRadomNumber].Spanish;
+                nextStudyWord.RandomWord.Id = nextStudyWord.WordsToAnswer[_anotherRadomNumber].Id;
                 nextStudyWord.Answer = "";
                 return View(nextStudyWord);
             }
@@ -57,9 +95,6 @@ namespace SpanishWords.Web.Controllers
                 StudyViewModel sameStudyWord = study;
                 return View(sameStudyWord);
             }
-           
-
-            
 
         }
     }
