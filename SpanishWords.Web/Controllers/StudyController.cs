@@ -44,6 +44,7 @@ namespace SpanishWords.Web.Controllers
             StudyViewModel study1 = new StudyViewModel();
             //populates list of WordsToAnswer for study1 Session, based on specific User
             study1.WordsToAnswer = _wordRepository.GetAllWords(User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList();
+            if (study1.WordsToAnswer.Count() == 0) throw new ArgumentOutOfRangeException(); //TODO: Dodać okienko ostrzegawcze: "Użytkownik nie dodał żadnych słów, nie można rozpocząć Study Session".
             //generated randomNumber for the first Word
             int _randomNumber = RandomNumberGenerator.GetInt32(study1.WordsToAnswer.Count() - 1);
             study1.IndexesOfWordsAnswered.Add(_randomNumber);
@@ -69,7 +70,7 @@ namespace SpanishWords.Web.Controllers
                 StudyViewModel nextStudyWord = new StudyViewModel();
                 nextStudyWord.IndexesOfWordsAnswered = study.IndexesOfWordsAnswered;
                 nextStudyWord.WordsToAnswer = study.WordsToAnswer;
-                nextStudyWord.RandomWord = new Word();
+                
                 //If every words in collection has been answered then terminate the study session
                 if(nextStudyWord.IndexesOfWordsAnswered.Count() == nextStudyWord.WordsToAnswer.Count())
                 {
@@ -84,7 +85,13 @@ namespace SpanishWords.Web.Controllers
                     else break;
                 }
                 nextStudyWord.IndexesOfWordsAnswered.Add(_anotherRadomNumber);
-                nextStudyWord.RandomWord.English = nextStudyWord.WordsToAnswer[_anotherRadomNumber].English;
+
+
+                /********************************
+                Inicjalizuję nową propercję RandomWord i wysyłam do formularza, ale ten nieszczęsny formularz generuje starą wartość w linii 22,23 i 24
+                **********************************/
+                nextStudyWord.RandomWord = new Word();
+                nextStudyWord.RandomWord.English = nextStudyWord.WordsToAnswer[_anotherRadomNumber].English; 
                 nextStudyWord.RandomWord.Spanish = nextStudyWord.WordsToAnswer[_anotherRadomNumber].Spanish;
                 nextStudyWord.RandomWord.Id = nextStudyWord.WordsToAnswer[_anotherRadomNumber].Id;
                 nextStudyWord.Answer = "";

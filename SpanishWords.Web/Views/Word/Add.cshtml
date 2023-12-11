@@ -21,7 +21,16 @@
         <label asp-for="Word.LexicalCategoryId">Select Lexical Category</label>
         <select asp-for="Word.LexicalCategoryId" asp-items="@Model.LexicalCategories"></select>
     </div>
-    <button type="submit" class="btn btn-primary">Create</button>
+
+    @if(Model.Word.English != null)
+    {
+        <button type="submit" class="btn btn-primary">Update</button>
+    }
+    else
+    {
+        <button type="submit" class="btn btn-primary">Create</button>
+    }
+    
 
     
 </form>

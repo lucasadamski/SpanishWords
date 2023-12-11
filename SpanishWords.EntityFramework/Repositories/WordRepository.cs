@@ -34,7 +34,7 @@ namespace EFDataAccess.Repositories
 
         public IEnumerable<Word> GetAllWords(string userId)
         {
-            if (userId == null) throw new ArgumentNullException("userId");
+            if (userId == null) throw new ArgumentNullException();
 
             IEnumerable<Word> result;
 
