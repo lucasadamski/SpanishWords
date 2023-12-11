@@ -14,12 +14,14 @@
     <div>
         <label asp-for="Word.GrammaticalGenderId">Select Gender</label>
         <select asp-for="Word.GrammaticalGenderId" asp-items="@Model.GrammaticalGenders">
-            <option disabled selectd>--- Select Gender ---</option>
+            <option disabled selected>--- Select Gender ---</option>
         </select>
     </div>
     <div>
         <label asp-for="Word.LexicalCategoryId">Select Lexical Category</label>
-        <select asp-for="Word.LexicalCategoryId" asp-items="@Model.LexicalCategories"></select>
+        <select asp-for="Word.LexicalCategoryId" asp-items="@Model.LexicalCategories">
+            <option disabled selected>--- Select Lexical Category ---</option>
+        </select>
     </div>
 
     @if(Model.Word.English != null)
