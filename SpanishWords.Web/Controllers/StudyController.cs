@@ -41,29 +41,28 @@ namespace SpanishWords.Web.Controllers
              * *****/
 
 
-            StudyViewModel study1 = new StudyViewModel();
-            //populates list of WordsToAnswer for study1 Session, based on specific User
-            study1.WordsToAnswer = _wordRepository.GetAllWords(User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList();
-            if (study1.WordsToAnswer.Count() == 0) throw new ArgumentOutOfRangeException(); //TODO: Dodać okienko ostrzegawcze: "Użytkownik nie dodał żadnych słów, nie można rozpocząć Study Session".
+            StudyViewModel study = new StudyViewModel();
+            //populates list of WordsToAnswer for study Session, based on specific User
+            study.WordsToAnswer = _wordRepository.GetAllWords(User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList();
+            if (study.WordsToAnswer.Count() == 0) throw new ArgumentOutOfRangeException(); //TODO: Dodać okienko ostrzegawcze: "Użytkownik nie dodał żadnych słów, nie można rozpocząć Study Session".
             //generated randomNumber for the first Word
-            int _randomNumber = RandomNumberGenerator.GetInt32(study1.WordsToAnswer.Count() - 1);
-            study1.IndexesOfWordsAnswered.Add(_randomNumber);
-            study1.RandomWord = new Word();
-            study1.RandomWord.English = study1.WordsToAnswer[_randomNumber].English;
-            study1.RandomWord.Spanish = study1.WordsToAnswer[_randomNumber].Spanish;
-            study1.RandomWord.Id = study1.WordsToAnswer[_randomNumber].Id;
-            study1.Answer = "";
+            int _randomNumber = RandomNumberGenerator.GetInt32(study.WordsToAnswer.Count() - 1);
+            study.IndexesOfWordsAnswered.Add(_randomNumber);
+            study.RandomWord = new Word();
+            study.RandomWord.English = study.WordsToAnswer[_randomNumber].English;
+            study.RandomWord.Spanish = study.WordsToAnswer[_randomNumber].Spanish;
+            study.RandomWord.Id = study.WordsToAnswer[_randomNumber].Id;
+            study.Answer = "";
 
-            return View(study1);
+            return View(study);
         }
 
         [HttpPost]
         public IActionResult Index(StudyViewModel study)
         {
-
             int _anotherRadomNumber = default;
             study.Answer = study.Answer.Trim();
-            if (study == null || study.Answer == null || study.Answer == "")  throw new InvalidDataException();
+            if (study == null || study.Answer == null || study.Answer == "")  throw new InvalidDataException(); //zcrashuje aplikację
 
             if (study.RandomWord.Spanish == study.Answer)
             {
@@ -75,12 +74,12 @@ namespace SpanishWords.Web.Controllers
                 if(nextStudyWord.IndexesOfWordsAnswered.Count() == nextStudyWord.WordsToAnswer.Count())
                 {
                     //Zakończenie testu
-                    return View("Home"); //?
+                    return RedirectToAction("Index", "Home");
                 }
                 //Generate random number until it's the one that has not been already answered
                 while (true)
                 {
-                    _anotherRadomNumber = RandomNumberGenerator.GetInt32(nextStudyWord.WordsToAnswer.Count() - 1);
+                    _anotherRadomNumber = RandomNumberGenerator.GetInt32(nextStudyWord.WordsToAnswer.Count());
                     if (nextStudyWord.IndexesOfWordsAnswered.Contains(_anotherRadomNumber) == true) continue;
                     else break;
                 }
@@ -90,6 +89,7 @@ namespace SpanishWords.Web.Controllers
                 /********************************
                 Inicjalizuję nową propercję RandomWord i wysyłam do formularza, ale ten nieszczęsny formularz generuje starą wartość w linii 22,23 i 24
                 **********************************/
+                ModelState.Clear();
                 nextStudyWord.RandomWord = new Word();
                 nextStudyWord.RandomWord.English = nextStudyWord.WordsToAnswer[_anotherRadomNumber].English; 
                 nextStudyWord.RandomWord.Spanish = nextStudyWord.WordsToAnswer[_anotherRadomNumber].Spanish;
