@@ -46,7 +46,7 @@ namespace SpanishWords.Web.Controllers
             //generated randomNumber for the first Word
             _randomNumber = RandomNumberGenerator.GetInt32(study.WordsToAnswer.Count());
             study.IndexesOfWordsAnswered.Add(_randomNumber);
-            study.RandomWord = study.WordsToAnswer[_randomNumber];
+            study.RandomWord = study.WordsToAnswer.ElementAt(_randomNumber);
             
             return View(study);
         }
@@ -77,7 +77,7 @@ namespace SpanishWords.Web.Controllers
                 Inicjalizuję nową propercję RandomWord i wysyłam do formularza, ale ten nieszczęsny formularz generuje starą wartość w linii 22,23 i 24
                 **********************************/
                 ModelState.Clear();
-                study.RandomWord = study.WordsToAnswer[_randomNumber];
+                study.RandomWord = study.WordsToAnswer.ElementAt(_randomNumber);
         
                 return View(study);
             }
