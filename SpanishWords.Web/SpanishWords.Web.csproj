@@ -30,4 +30,13 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\SpanishWords.EntityFramework\SpanishWords.EntityFramework.csproj" />
 	</ItemGroup>
+
+
+
+	<ItemGroup>
+	  <Content Update="Views\Study\StudyComplete.cshtml">
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	  </Content>
+	</ItemGroup>
 </Project>

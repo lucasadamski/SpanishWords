@@ -25,7 +25,8 @@ namespace SpanishWords.Web.Controllers
 {
     public class StudyController : Controller
     {
-        IWordRepository _wordRepository;
+        private IWordRepository _wordRepository;
+        private int _randomNumber;
 
         public StudyController(IWordRepository wordRepository)
         {
@@ -33,76 +34,67 @@ namespace SpanishWords.Web.Controllers
         }
         public IActionResult Index()
         {
-
             /*******
              *  User aswers the collection of words. Contorller will send random word which was not answered yet (the WordsToAnswer index is 
              *  not present in IndexesOfAnsweredWords list). When the number of items in IndexesOfAnsweredWords is the same as number of items in
              *  WordsToAnswer, then it means that all the words has been aswered and the Study Session is terminated.
              * *****/
-
-
             StudyViewModel study = new StudyViewModel();
             //populates list of WordsToAnswer for study Session, based on specific User
-            study.WordsToAnswer = _wordRepository.GetAllWords(User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList();
+            if (LoadWordsToAnswer(study) == false) return View("NoWordsToStudy");
             if (study.WordsToAnswer.Count() == 0) throw new ArgumentOutOfRangeException(); //TODO: Dodać okienko ostrzegawcze: "Użytkownik nie dodał żadnych słów, nie można rozpocząć Study Session".
             //generated randomNumber for the first Word
-            int _randomNumber = RandomNumberGenerator.GetInt32(study.WordsToAnswer.Count() - 1);
+            _randomNumber = RandomNumberGenerator.GetInt32(study.WordsToAnswer.Count());
             study.IndexesOfWordsAnswered.Add(_randomNumber);
-            study.RandomWord = new Word();
-            study.RandomWord.English = study.WordsToAnswer[_randomNumber].English;
-            study.RandomWord.Spanish = study.WordsToAnswer[_randomNumber].Spanish;
-            study.RandomWord.Id = study.WordsToAnswer[_randomNumber].Id;
-            study.Answer = "";
-
+            study.RandomWord = study.WordsToAnswer[_randomNumber];
+            
             return View(study);
         }
 
         [HttpPost]
         public IActionResult Index(StudyViewModel study)
         {
-            int _anotherRadomNumber = default;
             study.Answer = study.Answer.Trim();
-            if (study == null || study.Answer == null || study.Answer == "")  throw new InvalidDataException(); //zcrashuje aplikację
-
+            if (study == null || study.Answer == null || study.Answer == "")  throw new InvalidDataException(); //TODO: obsłużyć, zcrashuje aplikację
+            if (LoadWordsToAnswer(study) == false) return View("NoWordsToStudy");
             if (study.RandomWord.Spanish == study.Answer)
             {
-                StudyViewModel nextStudyWord = new StudyViewModel();
-                nextStudyWord.IndexesOfWordsAnswered = study.IndexesOfWordsAnswered;
-                nextStudyWord.WordsToAnswer = study.WordsToAnswer;
-                
                 //If every words in collection has been answered then terminate the study session
-                if(nextStudyWord.IndexesOfWordsAnswered.Count() == nextStudyWord.WordsToAnswer.Count())
+                if(study.IndexesOfWordsAnswered.Count() == study.WordsToAnswer.Count())
                 {
                     //Zakończenie testu
-                    return RedirectToAction("Index", "Home");
+                    return View("StudyComplete");
                 }
                 //Generate random number until it's the one that has not been already answered
                 while (true)
                 {
-                    _anotherRadomNumber = RandomNumberGenerator.GetInt32(nextStudyWord.WordsToAnswer.Count());
-                    if (nextStudyWord.IndexesOfWordsAnswered.Contains(_anotherRadomNumber) == true) continue;
+                    _randomNumber = RandomNumberGenerator.GetInt32(study.WordsToAnswer.Count());
+                    if (study.IndexesOfWordsAnswered.Contains(_randomNumber) == true) continue;
                     else break;
                 }
-                nextStudyWord.IndexesOfWordsAnswered.Add(_anotherRadomNumber);
-
-
+                study.IndexesOfWordsAnswered.Add(_randomNumber);
                 /********************************
                 Inicjalizuję nową propercję RandomWord i wysyłam do formularza, ale ten nieszczęsny formularz generuje starą wartość w linii 22,23 i 24
                 **********************************/
                 ModelState.Clear();
-                nextStudyWord.RandomWord = new Word();
-                nextStudyWord.RandomWord.English = nextStudyWord.WordsToAnswer[_anotherRadomNumber].English; 
-                nextStudyWord.RandomWord.Spanish = nextStudyWord.WordsToAnswer[_anotherRadomNumber].Spanish;
-                nextStudyWord.RandomWord.Id = nextStudyWord.WordsToAnswer[_anotherRadomNumber].Id;
-                nextStudyWord.Answer = "";
-                return View(nextStudyWord);
+                study.RandomWord = study.WordsToAnswer[_randomNumber];
+        
+                return View(study);
             }
             else
             {
-                StudyViewModel sameStudyWord = study;
-                return View(sameStudyWord);
+                return View(study);
             }
-
         }
+
+        private bool LoadWordsToAnswer(StudyViewModel study)
+        {
+            study.WordsToAnswer = _wordRepository.GetAllWords(User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList();
+            if (study.WordsToAnswer == null || study.WordsToAnswer.Count() == 0) return false;
+            return true;
+        }
+
+
     }
+
 }
