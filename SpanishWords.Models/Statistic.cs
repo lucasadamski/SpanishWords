@@ -16,8 +16,6 @@ namespace SpanishWords.Models
         [Required]
         public int TimesIncorrect { get; set; }
         [Required]
-        public int TimesTrained { get; set; }
-        [Required]
         public DateTime CreateDate { get; set; }
         [Required]
         public DateTime LastUpdated { get; set; }

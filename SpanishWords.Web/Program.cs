@@ -4,6 +4,7 @@ using EFDataAccess.Repositories.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SpanishWords.Models;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace SpanishWords.Web
 {

@@ -7,15 +7,16 @@
     <table class="table">
         <thead>
             <tr>
-                <th scope="col">#</th>
-                <th scope="col"><p>English</p></th>
-                <th scope="col">Spanish</th>
-                <th scope="col">Gender</th>
-                <th scope="col">Lexical Cat</th>
-                <th scope="col">User</th>
-                <th scope="col">Times Trained</th>
-                <th scope="col">Action</th>
-
+                    <th scope="col">#</th>
+                    <th scope="col">English</th>
+                    <th scope="col">Spanish</th>
+                    <th scope="col">Gender</th>
+                    <th scope="col">Lexical</th>
+                    <th scope="col">X Correct</th>
+                    <th scope="col">X Incorrect</th>
+                    <th scope="col">X Trained</th>
+                    <th scope="col">Edit</th>
+                    <th scope="col">Delete</th>
             </tr>
         </thead>
         <tbody>
@@ -23,14 +24,16 @@
                     for (int i = 0; i < Model.Words.Count(); i++)
                     {
                     <tr>
-                        <th scope="row">@(i+1)</th>
-                        <td><p>@Model.Words[i].English</p></td>
-                        <td>@Model.Words[i].Spanish</td>
-                        <td>@Model.Words[i].GrammaticalGender?.Name</td>
-                        <td>@Model.Words[i].LexicalCategory?.Name</td>
-                        <td>@Model.Words[i].Statistic.TimesTrained</td>
-                        <td><a asp-controller="Word" asp-action="Edit" asp-route-id="@Model.Words[i].Id">Edit</a></td>
-                        <td><a asp-controller="Word" asp-action="Delete" asp-route-id="@Model.Words[i].Id">Delete</a></td>
+                            <th scope="row">@(i+1)</th>
+                            <td><p>@Model.Words[i].English</p></td>
+                            <td>@Model.Words.ElementAt(i).Spanish</td>
+                            <td>@Model.Words.ElementAt(i).GrammaticalGender?.Name</td>
+                            <td>@Model.Words.ElementAt(i).LexicalCategory?.Name</td>
+                            <td>@Model.Words.ElementAt(i).Statistic.TimesCorrect</td>
+                            <td>@Model.Words.ElementAt(i).Statistic.TimesIncorrect</td>
+                            <td>@(Model.Words.ElementAt(i).Statistic.TimesIncorrect + Model.Words.ElementAt(i).Statistic.TimesCorrect)</td>
+                            <td><a asp-controller="Word" asp-action="Edit" asp-route-id="@Model.Words[i].Id">Edit</a></td>
+                            <td><a asp-controller="Word" asp-action="Delete" asp-route-id="@Model.Words[i].Id">Delete</a></td>
                     </tr>
                     }
                     
