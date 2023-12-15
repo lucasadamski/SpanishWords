@@ -59,8 +59,9 @@ namespace SpanishWords.Web.Controllers
             if (LoadWordsToAnswer(study) == false) return View("NoWordsToStudy");
             if (study.RandomWord.Spanish == study.Answer)
             {
+                if(_wordRepository.SaveStats(study.RandomWord, true) == false) throw new InvalidDataException();
                 //If every words in collection has been answered then terminate the study session
-                if(study.IndexesOfWordsAnswered.Count() == study.WordsToAnswer.Count())
+                if (study.IndexesOfWordsAnswered.Count() == study.WordsToAnswer.Count())
                 {
                     //Zakończenie testu
                     return View("StudyComplete");
@@ -83,6 +84,7 @@ namespace SpanishWords.Web.Controllers
             }
             else
             {
+                if (_wordRepository.SaveStats(study.RandomWord, false) == false) throw new InvalidDataException();
                 return View(study);
             }
         }

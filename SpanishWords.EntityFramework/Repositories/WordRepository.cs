@@ -111,5 +111,18 @@ namespace EFDataAccess.Repositories
             else return (_db.Words.ToList())[RandomNumberGenerator.GetInt32(_db.Words.Count())];
         }
 
+
+        public bool SaveStats(Word word, bool isCorrect)
+        {
+            Word wordStat = _db.Words.Where(n => n.Id == word.Id).First();
+            if (wordStat == null) return false;
+
+            if (isCorrect == true) wordStat.Statistic.TimesCorrect++;
+            else wordStat.Statistic.TimesIncorrect++;
+
+            _db.Update(wordStat);
+            _db.SaveChanges();
+            return true;
+        }
     }
 }

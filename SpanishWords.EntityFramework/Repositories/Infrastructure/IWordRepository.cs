@@ -27,6 +27,7 @@ namespace EFDataAccess.Repositories.Infrastructure
 
         public Word GetRandomWord();
 
+        public bool SaveStats(Word word, bool isCorrect);
 
     }
 }
