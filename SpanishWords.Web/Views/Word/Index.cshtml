@@ -20,16 +20,22 @@
             </tr>
         </thead>
         <tbody>
+                
                 @{
                     for (int i = 0; i < Model.Words.Count(); i++)
                     {
+                         string tableBackgroudClass;
+                         if (@Model.Words.ElementAt(i).Statistic.TimesCorrect > 3) tableBackgroudClass = "bg-success";
+                         else tableBackgroudClass = "bg-warning";
+
+
                     <tr>
                             <th scope="row">@(i+1)</th>
                             <td><p>@Model.Words[i].English</p></td>
                             <td>@Model.Words.ElementAt(i).Spanish</td>
                             <td>@Model.Words.ElementAt(i).GrammaticalGender?.Name</td>
                             <td>@Model.Words.ElementAt(i).LexicalCategory?.Name</td>
-                            <td>@Model.Words.ElementAt(i).Statistic.TimesCorrect</td>
+                            <td class="@tableBackgroudClass">@Model.Words.ElementAt(i).Statistic.TimesCorrect</td>
                             <td>@Model.Words.ElementAt(i).Statistic.TimesIncorrect</td>
                             <td>@(Model.Words.ElementAt(i).Statistic.TimesIncorrect + Model.Words.ElementAt(i).Statistic.TimesCorrect)</td>
                             <td><a asp-controller="Word" asp-action="Edit" asp-route-id="@Model.Words[i].Id">Edit</a></td>

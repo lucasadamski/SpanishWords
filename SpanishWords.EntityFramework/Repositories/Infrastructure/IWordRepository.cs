@@ -15,6 +15,7 @@ namespace EFDataAccess.Repositories.Infrastructure
         Word GetWordById(int id);
 
         public IEnumerable<Word> GetAllWords(string userId);
+        public IEnumerable<Word> GetAllNotLearntWords(string userId, int timesCorrect);
 
         bool Edit(Word word);
         bool Delete(Word word);

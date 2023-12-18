@@ -124,5 +124,29 @@ namespace EFDataAccess.Repositories
             _db.SaveChanges();
             return true;
         }
+
+        public IEnumerable<Word> GetAllNotLearntWords(string userId, int timesCorrect)
+        {
+            if (userId == null) throw new ArgumentNullException();
+
+            IEnumerable<Word> result;
+
+            try
+            {
+                result = _db.Words.Include(a => a.GrammaticalGender)
+                    .Where(a => a.UserId == userId)
+                    .Where(a => a.Statistic.TimesCorrect <= timesCorrect)
+                    .Include(a => a.LexicalCategory)
+                    .Include(a => a.Statistic)
+                    .ToList();
+            }
+            catch (Exception e)
+            {
+                e.Data.Add("DebugMessage", "Error occured in GetAllWords method in WordRepository.cs");
+                throw;
+            }
+
+            return result;
+        }
     }
 }

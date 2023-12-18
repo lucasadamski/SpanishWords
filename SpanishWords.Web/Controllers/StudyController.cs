@@ -91,7 +91,8 @@ namespace SpanishWords.Web.Controllers
 
         private bool LoadWordsToAnswer(StudyViewModel study)
         {
-            study.WordsToAnswer = _wordRepository.GetAllWords(User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList();
+            //study.WordsToAnswer = _wordRepository.GetAllWords(User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList();
+            study.WordsToAnswer = _wordRepository.GetAllNotLearntWords(User.FindFirstValue(ClaimTypes.NameIdentifier), 3).ToList();
             if (study.WordsToAnswer == null || study.WordsToAnswer.Count() == 0) return false;
             return true;
         }
