@@ -6,6 +6,8 @@ using SpanishWords.Models;
 using SpanishWords.Web.Models;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using Microsoft.Extensions.Logging;
+using SpanishWords.Web.Helpers;
 
 
 /*
@@ -27,10 +29,12 @@ namespace SpanishWords.Web.Controllers
     {
         private IWordRepository _wordRepository;
         private int _randomNumber;
+        private readonly ILogger<StudyController> _logger;
 
-        public StudyController(IWordRepository wordRepository)
+        public StudyController(IWordRepository wordRepository, ILogger<StudyController> logger)
         {
             _wordRepository = wordRepository;
+            _logger = logger;
         }
         public IActionResult Index()
         {
@@ -42,7 +46,7 @@ namespace SpanishWords.Web.Controllers
             StudyViewModel study = new StudyViewModel();
             //populates list of WordsToAnswer for study Session, based on specific User
             if (LoadWordsToAnswer(study) == false) return View("NoWordsToStudy");
-            if (study.WordsToAnswer.Count() == 0) throw new ArgumentOutOfRangeException(); //TODO: Dodać okienko ostrzegawcze: "Użytkownik nie dodał żadnych słów, nie można rozpocząć Study Session".
+            if (study.WordsToAnswer.Count() == 0) return View("NoWordsToStudy");
             //generated randomNumber for the first Word
             _randomNumber = RandomNumberGenerator.GetInt32(study.WordsToAnswer.Count());
             study.IndexesOfWordsAnswered.Add(_randomNumber);
@@ -54,16 +58,41 @@ namespace SpanishWords.Web.Controllers
         [HttpPost]
         public IActionResult Index(StudyViewModel study)
         {
-            study.Answer = study.Answer.Trim();
-            if (study == null || study.Answer == null || study.Answer == "")  throw new InvalidDataException(); //TODO: obsłużyć, zcrashuje aplikację
+            if (IsValid(study) == false) return View("~/Views/Shared/MyError.cshtml");
             if (LoadWordsToAnswer(study) == false) return View("NoWordsToStudy");
+            return CheckAnswer(study);
+        }
+
+        private bool LoadWordsToAnswer(StudyViewModel study)
+        {
+            study.WordsToAnswer = _wordRepository.GetAllNotLearntWords(User.FindFirstValue(ClaimTypes.NameIdentifier), 3).ToList();
+            if (study.WordsToAnswer == null || study.WordsToAnswer.Count() == 0) return false;
+            return true;
+        }
+
+        private bool IsValid(StudyViewModel study)
+        {
+            study.Answer = study.Answer.Trim();
+            if (study == null || study.Answer == null || study.Answer == "")
+            {
+                _logger.LogInformation(ExceptionHelper.EMPTY_VARIABLE);
+                return false;
+            }
+            return true;
+        }
+
+        private IActionResult CheckAnswer(StudyViewModel study)
+        {
             if (study.RandomWord.Spanish == study.Answer)
             {
-                if(_wordRepository.SaveStats(study.RandomWord, true) == false) throw new InvalidDataException();
+                if (_wordRepository.SaveStats(study.RandomWord, true) == false)
+                {
+                    _logger.LogInformation(ExceptionHelper.DATABASE_CONNECTION_ERROR);
+                    return View("~/Views/Shared/MyError.cshtml");
+                }
                 //If every words in collection has been answered then terminate the study session
                 if (study.IndexesOfWordsAnswered.Count() == study.WordsToAnswer.Count())
                 {
-                    //Zakończenie testu
                     return View("StudyComplete");
                 }
                 //Generate random number until it's the one that has not been already answered
@@ -74,27 +103,20 @@ namespace SpanishWords.Web.Controllers
                     else break;
                 }
                 study.IndexesOfWordsAnswered.Add(_randomNumber);
-                /********************************
-                Inicjalizuję nową propercję RandomWord i wysyłam do formularza, ale ten nieszczęsny formularz generuje starą wartość w linii 22,23 i 24
-                **********************************/
                 ModelState.Clear();
                 study.RandomWord = study.WordsToAnswer.ElementAt(_randomNumber);
-        
+
                 return View(study);
             }
             else
             {
-                if (_wordRepository.SaveStats(study.RandomWord, false) == false) throw new InvalidDataException();
+                if (_wordRepository.SaveStats(study.RandomWord, false) == false)
+                {
+                    _logger.LogInformation(ExceptionHelper.DATABASE_CONNECTION_ERROR);
+                    return View("~/Views/Shared/MyError.cshtml");
+                }
                 return View(study);
             }
-        }
-
-        private bool LoadWordsToAnswer(StudyViewModel study)
-        {
-            //study.WordsToAnswer = _wordRepository.GetAllWords(User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList();
-            study.WordsToAnswer = _wordRepository.GetAllNotLearntWords(User.FindFirstValue(ClaimTypes.NameIdentifier), 3).ToList();
-            if (study.WordsToAnswer == null || study.WordsToAnswer.Count() == 0) return false;
-            return true;
         }
 
 

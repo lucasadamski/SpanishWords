@@ -23,8 +23,6 @@ namespace SpanishWords.Web.Controllers
 
         public IActionResult Index()
         {
-
-
            WordViewModel wordViewModel = new WordViewModel();
 
 
