@@ -30,6 +30,7 @@ namespace SpanishWords.Web.Controllers
         private IWordRepository _wordRepository;
         private int _randomNumber;
         private readonly ILogger<StudyController> _logger;
+        private IActionResult _view;
 
         public StudyController(IWordRepository wordRepository, ILogger<StudyController> logger)
         {
@@ -60,7 +61,17 @@ namespace SpanishWords.Web.Controllers
         {
             if (IsValid(study) == false) return View("~/Views/Shared/MyError.cshtml");
             if (LoadWordsToAnswer(study) == false) return View("NoWordsToStudy");
-            return CheckAnswer(study);
+            if (study.RandomWord.Spanish == study.Answer)
+            {
+                UpdateStats(study, true);
+                if (_view == null) GenerateNextRandomWord(study);
+            }
+            else
+            {
+                UpdateStats(study, false);
+                if (_view == null) _view = View(study);
+            }
+            return _view;
         }
 
         private bool LoadWordsToAnswer(StudyViewModel study)
@@ -81,45 +92,41 @@ namespace SpanishWords.Web.Controllers
             return true;
         }
 
-        private IActionResult CheckAnswer(StudyViewModel study)
+    
+        private void GenerateNextRandomWord(StudyViewModel study)
         {
-            if (study.RandomWord.Spanish == study.Answer)
+            //If every words in collection has been answered then terminate the study session
+            if (study.IndexesOfWordsAnswered.Count() == study.WordsToAnswer.Count())
             {
-                if (_wordRepository.SaveStats(study.RandomWord, true) == false)
-                {
-                    _logger.LogInformation(ExceptionHelper.DATABASE_CONNECTION_ERROR);
-                    return View("~/Views/Shared/MyError.cshtml");
-                }
-                //If every words in collection has been answered then terminate the study session
-                if (study.IndexesOfWordsAnswered.Count() == study.WordsToAnswer.Count())
-                {
-                    return View("StudyComplete");
-                }
-                //Generate random number until it's the one that has not been already answered
-                while (true)
-                {
-                    _randomNumber = RandomNumberGenerator.GetInt32(study.WordsToAnswer.Count());
-                    if (study.IndexesOfWordsAnswered.Contains(_randomNumber) == true) continue;
-                    else break;
-                }
-                study.IndexesOfWordsAnswered.Add(_randomNumber);
-                ModelState.Clear();
-                study.RandomWord = study.WordsToAnswer.ElementAt(_randomNumber);
+                _view = View("StudyComplete");
+                return;
+            }
+            //Generate random number until it's the one that has not been already answered
+            while (true)
+            {
+                _randomNumber = RandomNumberGenerator.GetInt32(study.WordsToAnswer.Count());
+                if (study.IndexesOfWordsAnswered.Contains(_randomNumber) == true) continue;
+                else break;
+            }
+            study.IndexesOfWordsAnswered.Add(_randomNumber);
+            ModelState.Clear();
+            study.RandomWord = study.WordsToAnswer.ElementAt(_randomNumber);
+            _view = View(study);
+            return;
+        }
 
-                return View(study);
+        private void UpdateStats(StudyViewModel study, bool isCorrect)
+        {
+            if (_wordRepository.SaveStats(study.RandomWord, isCorrect) == false)
+            {
+                _logger.LogInformation(ExceptionHelper.DATABASE_CONNECTION_ERROR);
+                _view = View("~/Views/Shared/MyError.cshtml");
             }
             else
             {
-                if (_wordRepository.SaveStats(study.RandomWord, false) == false)
-                {
-                    _logger.LogInformation(ExceptionHelper.DATABASE_CONNECTION_ERROR);
-                    return View("~/Views/Shared/MyError.cshtml");
-                }
-                return View(study);
+                _view = null;
             }
         }
-
-
     }
 
 }
