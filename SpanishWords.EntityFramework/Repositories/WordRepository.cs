@@ -1,6 +1,7 @@
 ﻿using EFDataAccess.DataAccess;
 using EFDataAccess.Repositories.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Client;
 using SpanishWords.Models;
 using System;
@@ -9,6 +10,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using SpanishWords.EntityFramework.Helpers;
 
 namespace EFDataAccess.Repositories
 {
@@ -16,10 +18,12 @@ namespace EFDataAccess.Repositories
     public class WordRepository : IWordRepository
     {
         private readonly WordsContext _db;
+        private readonly ILogger<WordRepository> _logger;
 
-        public WordRepository(WordsContext db)
+        public WordRepository(WordsContext db, ILogger<WordRepository> logger)
         {
-            this._db = db;
+            _db = db;
+            _logger = logger;
         }
 
         public Statistic CreateAndAddStatistic()
@@ -29,12 +33,16 @@ namespace EFDataAccess.Repositories
             Statistic statistic = new Statistic() { CreateDate = dateTimeNow, LastUpdated = dateTimeNow, TimesCorrect = 0, TimesIncorrect = 0};
             _db.Statistics.Add(statistic);
             _db.SaveChanges();
-            return _db.Statistics.Where(a => a == statistic).FirstOrDefault();
+            return statistic;
         }
 
         public IEnumerable<Word> GetAllWords(string userId)
         {
-            if (userId == null) throw new ArgumentNullException();
+            if (userId == null)
+            {
+                _logger.LogError(ExceptionHelper.EMPTY_VARIABLE);
+                return new List<Word>();
+            }
 
             IEnumerable<Word> result;
 
@@ -48,8 +56,8 @@ namespace EFDataAccess.Repositories
             }
             catch (Exception e)
             {
-                e.Data.Add("DebugMessage", "Error occured in GetAllWords method in WordRepository.cs");
-                throw;
+                _logger.LogError(ExceptionHelper.EF_QUERY_ERROR + ExceptionHelper.GetErrorMessage(e.Message));
+                return new List<Word>();
             }
 
             return result;
@@ -89,6 +97,7 @@ namespace EFDataAccess.Repositories
             }
             catch(Exception e)
             {
+                _logger.LogError(ExceptionHelper.EF_QUERY_ERROR + ExceptionHelper.GetErrorMessage(e.Message));
                 return new List<GrammaticalGender>();
             }
         }
@@ -101,13 +110,18 @@ namespace EFDataAccess.Repositories
             }
             catch (Exception e)
             {
+                _logger.LogError(ExceptionHelper.EF_QUERY_ERROR + ExceptionHelper.GetErrorMessage(e.Message));
                 return new List<LexicalCategory>();
             }
         }
 
         public Word GetRandomWord()
         {
-            if (_db.Words == null || _db.Words.Count() < 1) throw new InvalidDataException(); 
+            if (_db.Words == null || _db.Words.Count() < 1)
+            {
+                _logger.LogError(ExceptionHelper.EMPTY_VARIABLE);
+                return new Word();
+            }
             else return (_db.Words.ToList())[RandomNumberGenerator.GetInt32(_db.Words.Count())];
         }
 
@@ -127,7 +141,11 @@ namespace EFDataAccess.Repositories
 
         public IEnumerable<Word> GetAllNotLearntWords(string userId, int timesCorrect)
         {
-            if (userId == null) throw new ArgumentNullException();
+            if (userId == null)
+            {
+                _logger.LogError(ExceptionHelper.EMPTY_VARIABLE);
+                return new List<Word>();
+            }
 
             IEnumerable<Word> result;
 
@@ -142,8 +160,8 @@ namespace EFDataAccess.Repositories
             }
             catch (Exception e)
             {
-                e.Data.Add("DebugMessage", "Error occured in GetAllWords method in WordRepository.cs");
-                throw;
+                _logger.LogError(ExceptionHelper.EF_QUERY_ERROR + ExceptionHelper.GetErrorMessage(e.Message));
+                return new List<Word>();
             }
 
             return result;
