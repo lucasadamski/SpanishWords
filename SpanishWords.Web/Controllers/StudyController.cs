@@ -52,7 +52,7 @@ namespace SpanishWords.Web.Controllers
             _randomNumber = RandomNumberGenerator.GetInt32(study.WordsToAnswer.Count());
             study.IndexesOfWordsAnswered.Add(_randomNumber);
             study.RandomWord = study.WordsToAnswer.ElementAt(_randomNumber);
-            
+            study.isFirstQuestion = true;
             return View(study);
         }
 
@@ -117,6 +117,8 @@ namespace SpanishWords.Web.Controllers
 
         private void UpdateStats(StudyViewModel study, bool isCorrect)
         {
+            if (isCorrect == true) study.wasLastAnswerCorrect = true;
+            else study.wasLastAnswerCorrect = false;
             if (_wordRepository.SaveStats(study.RandomWord, isCorrect) == false)
             {
                 _logger.LogInformation(ExceptionHelper.DATABASE_CONNECTION_ERROR);

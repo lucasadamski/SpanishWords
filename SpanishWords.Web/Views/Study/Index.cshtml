@@ -1,5 +1,10 @@
 ﻿@model StudyViewModel
 
+<script src="/lib/jquery/dist/jquery.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+
+
 
 
 <h2 class="alert-heading">@Model.RandomWord.English</h2>
@@ -18,8 +23,37 @@
         <input asp-for="@Model.Answer" autofocus value="">
     </div>
     <button type="submit">Check answer</button>
+    
 </form>
 
 <a asp-controller="Home" asp-action="Index"><button class="btn btn-primary">Cancel study session.</button></a>
 
+<script type="text/javascript">
 
+    toastr.options = {
+        "closeButton": false,
+        "debug": false,
+        "newestOnTop": true,
+        "progressBar": false,
+        "positionClass": "toast-bottom-right",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": "5000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    };
+    const isFirstQuestion = '@Html.Raw(Json.Serialize(Model.isFirstQuestion))'
+    const wasLastAnswerCorrect = '@Html.Raw(Json.Serialize(Model.wasLastAnswerCorrect))';
+    if(isFirstQuestion == 'false'){
+        if (wasLastAnswerCorrect == 'true') {
+            toastr["success"]("Correct answer!", "Congratulations!");
+        } else {
+            toastr["error"]("Incorrect answer!", "Try again!");
+        }
+    }
+</script>

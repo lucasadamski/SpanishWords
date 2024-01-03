@@ -26,6 +26,7 @@
 
 		<PackageReference Include="NLog.Web.AspNetCore" Version="5.*" />
 		<PackageReference Include="NLog" Version="5.*" />
+		<PackageReference Include="toastr" Version="2.1.1" />
 	</ItemGroup>
 
 
