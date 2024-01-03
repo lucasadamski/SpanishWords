@@ -109,6 +109,21 @@ namespace SpanishWords.Web.Controllers
             return RedirectToAction("Index", "Word");
         }
 
-    
+        
+        public IActionResult RestartProgressForAllWords()
+        {
+            _wordRepository.RestartProgressForAll();
+            WordViewModel wordViewModel = new WordViewModel();
+            wordViewModel.Words = _wordRepository.GetAllWords(User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList(); //string z userId
+            return View("Index", wordViewModel);
+        }
+
+        public IActionResult RestartProgressForOneWord(int id)
+        {
+            _wordRepository.RestartProgress(id);
+            WordViewModel wordViewModel = new WordViewModel();
+            wordViewModel.Words = _wordRepository.GetAllWords(User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList(); //string z userId
+            return View("Index", wordViewModel);
+        }
     }
 }

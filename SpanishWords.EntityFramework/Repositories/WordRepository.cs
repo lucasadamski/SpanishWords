@@ -166,5 +166,42 @@ namespace EFDataAccess.Repositories
 
             return result;
         }
+        public bool RestartProgressForAll()
+        {
+            try
+            {
+                List<Word> words = _db.Words.Include(n => n.Statistic).ToList();
+                for (int i = 0; i < words.Count(); i++)
+                {
+                    words[i].Statistic.TimesCorrect = 0;
+                    words[i].Statistic.TimesIncorrect = 0;
+                    _db.Update(words[i]);
+                }
+                _db.SaveChanges();
+                return true;
+            }
+            catch(Exception e)
+            {
+                _logger.LogError(ExceptionHelper.EF_QUERY_ERROR + ExceptionHelper.GetErrorMessage(e.Message));
+                return false;
+            }
+        }
+        public bool RestartProgress(int id)
+        {
+            try
+            {
+                Word word = _db.Words.Include(n => n.Statistic).Where(n => n.Id == id).FirstOrDefault();
+                word.Statistic.TimesCorrect = 0;
+                word.Statistic.TimesIncorrect = 0;
+                _db.Update(word);
+                _db.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(ExceptionHelper.EF_QUERY_ERROR + ExceptionHelper.GetErrorMessage(e.Message));
+                return false;
+            }
+        }
     }
 }

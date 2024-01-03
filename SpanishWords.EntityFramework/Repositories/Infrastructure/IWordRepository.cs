@@ -29,6 +29,8 @@ namespace EFDataAccess.Repositories.Infrastructure
         public Word GetRandomWord();
 
         public bool SaveStats(Word word, bool isCorrect);
+        public bool RestartProgressForAll();
+        public bool RestartProgress(int id);
 
     }
 }

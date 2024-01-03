@@ -47,8 +47,8 @@
         "showMethod": "fadeIn",
         "hideMethod": "fadeOut"
     };
-    const isFirstQuestion = '@Html.Raw(Json.Serialize(Model.isFirstQuestion))'
-    const wasLastAnswerCorrect = '@Html.Raw(Json.Serialize(Model.wasLastAnswerCorrect))';
+    const isFirstQuestion = '@Html.Raw(Json.Serialize(Model.IsFirstQuestion))'
+    const wasLastAnswerCorrect = '@Html.Raw(Json.Serialize(Model.WasLastAnswerCorrect))';
     if(isFirstQuestion == 'false'){
         if (wasLastAnswerCorrect == 'true') {
             toastr["success"]("Correct answer!", "Congratulations!");

@@ -8,8 +8,8 @@ namespace SpanishWords.Web.Models
         public string Answer { get; set; }
         public List<Word> WordsToAnswer { get; set; }
         public List<int> IndexesOfWordsAnswered { get; set; } = new List<int>();
-        public bool wasLastAnswerCorrect { get; set; }
-        public bool isFirstQuestion { get; set; }
+        public bool WasLastAnswerCorrect { get; set; }
+        public bool IsFirstQuestion { get; set; }
 
     }
 }

@@ -17,6 +17,8 @@
                     <th scope="col">X Trained</th>
                     <th scope="col">Edit</th>
                     <th scope="col">Delete</th>
+                    <th scope="col">Restart Progress</th>
+
             </tr>
         </thead>
         <tbody>
@@ -40,10 +42,13 @@
                             <td>@(Model.Words.ElementAt(i).Statistic.TimesIncorrect + Model.Words.ElementAt(i).Statistic.TimesCorrect)</td>
                             <td><a asp-controller="Word" asp-action="Edit" asp-route-id="@Model.Words[i].Id">Edit</a></td>
                             <td><a asp-controller="Word" asp-action="Delete" asp-route-id="@Model.Words[i].Id">Delete</a></td>
+                            <td><a asp-controller="Word" asp-action="RestartProgressForOneWord" asp-route-id="@Model.Words[i].Id">Restart Progress</a></td>
+
                     </tr>
                     }
                     
                 }
+                <a asp-controller="Word" asp-action="RestartProgressForAllWords">Restart Progress For All Words</a>
         </tbody>
     </table>
 </div>
