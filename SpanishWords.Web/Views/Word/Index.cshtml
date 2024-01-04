@@ -1,5 +1,7 @@
 ﻿@model WordViewModel
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.2/dist/sweetalert2.all.min.js"></script>
+
 <div>
     <h1>Words from database</h1>
     <p>Those records are loaded from database.</p>
@@ -40,15 +42,75 @@
                             <td class="@tableBackgroudClass">@Model.Words.ElementAt(i).Statistic.TimesCorrect</td>
                             <td>@Model.Words.ElementAt(i).Statistic.TimesIncorrect</td>
                             <td>@(Model.Words.ElementAt(i).Statistic.TimesIncorrect + Model.Words.ElementAt(i).Statistic.TimesCorrect)</td>
-                            <td><a asp-controller="Word" asp-action="Edit" asp-route-id="@Model.Words[i].Id">Edit</a></td>
-                            <td><a asp-controller="Word" asp-action="Delete" asp-route-id="@Model.Words[i].Id">Delete</a></td>
-                            <td><a asp-controller="Word" asp-action="RestartProgressForOneWord" asp-route-id="@Model.Words[i].Id">Restart Progress</a></td>
+                            <td>
+                                <form asp-controller="Word" asp-action="Edit" asp-route-id="@Model.Words[i].Id" method="GET">
+                                    <button type="submit" class="btn btn-primary">Edit</button>
+                                </form>
+                            </td>
+                            <td>
+                                <form id="delete-word-form-@i" onsubmit="deleteWordAction(event, @i)" asp-controller="Word" asp-action="Delete" asp-route-id="@Model.Words[i].Id" method="GET">
+                                    <button type="submit" class="btn btn-primary">Delete</button>
+                                </form>
+                            </td>
+                            <td>
+                                <form id="restart-progress-for-one-word-form-@i" onsubmit="resetProgressForOneWordAction(event, @i)" asp-controller="Word" asp-action="RestartProgressForOneWord" asp-route-id="@Model.Words[i].Id" method="GET">
+                                    <button type="submit" class="btn btn-primary">Reset Progress</button>
+                                </form>
+                            </td>
 
                     </tr>
                     }
-                    
-                }
-                <a asp-controller="Word" asp-action="RestartProgressForAllWords">Restart Progress For All Words</a>
+                   
+                    <form id="restart-progress-for-all-words-form" onsubmit="resetProgressForAllAction(event)" asp-controller="Word" asp-action="RestartProgressForAllWords" method="GET">
+                        <button type="submit" class="btn btn-primary position-relative top-0 start-50">Reset Progress For All Words</button>
+                    </form>
+                    @section Scripts{
+                        <script type="text/javascript">
+                            function resetProgressForAllAction(e) {
+                                e.preventDefault();
+                                Swal.fire({
+                                    title: 'Are you sure?',
+                                    text: 'This will reset progress for ALL words, do you want to continue?',
+                                    icon: 'question',
+                                    showCancelButton: true
+                                }).then(result => {
+                                    if (result.isConfirmed) {
+                                        const restartForm = document.getElementById('restart-progress-for-all-words-form');
+                                        restartForm.submit();
+                                    }
+                                })                      
+                            }
+
+                            function resetProgressForOneWordAction(e, idNumber) {
+                                e.preventDefault();
+                                Swal.fire({
+                                    title: 'Do you want to reset progress for this word?',
+                                    icon: 'question',
+                                    showCancelButton: true
+                                }).then(result => {
+                                    if (result.isConfirmed) {
+                                        const restartOneWordForm = document.getElementById(`restart-progress-for-one-word-form-${idNumber}`);
+                                        restartOneWordForm.submit();
+                                    }
+                                })
+                            }
+
+                            function deleteWordAction(e, idNumber) {
+                                e.preventDefault();
+                                Swal.fire({
+                                    title: 'Do you want to delete this word?',
+                                    icon: 'question',
+                                    showCancelButton: true
+                                }).then(result => {
+                                    if (result.isConfirmed) {
+                                        const deleteWordForm = document.getElementById(`delete-word-form-${idNumber}`);
+                                        deleteWordForm.submit();
+                                    }
+                                })
+                            }
+                        </script>
+                    }
+                }                
         </tbody>
     </table>
 </div>
