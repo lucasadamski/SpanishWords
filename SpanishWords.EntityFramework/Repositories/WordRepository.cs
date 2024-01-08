@@ -26,11 +26,11 @@ namespace EFDataAccess.Repositories
             _logger = logger;
         }
 
-        public Statistic CreateAndAddStatistic()
+        public Statistic CreateAndAddStatistic(int numberOfAnswersToLearnTheWord)
         {
             DateTime dateTimeNow = new DateTime();
             dateTimeNow = DateTime.Now;
-            Statistic statistic = new Statistic() { CreateDate = dateTimeNow, LastUpdated = dateTimeNow, TimesCorrect = 0, TimesIncorrect = 0};
+            Statistic statistic = new Statistic() { CreateDate = dateTimeNow, LastUpdated = dateTimeNow, CorrectAnswersToLearn = numberOfAnswersToLearnTheWord };
             _db.Statistics.Add(statistic);
             _db.SaveChanges();
             return statistic;
@@ -128,12 +128,19 @@ namespace EFDataAccess.Repositories
 
         public bool SaveStats(Word word, bool isCorrect)
         {
-            Word wordStat = _db.Words.Where(n => n.Id == word.Id).First();
+            Word wordStat = _db.Words.Include(n => n.Statistic.StudyEntry).Where(n => n.Id == word.Id).First();
             if (wordStat == null) return false;
 
-            if (isCorrect == true) wordStat.Statistic.TimesCorrect++;
-            else wordStat.Statistic.TimesIncorrect++;
+            StudyEntry studyEntry = new StudyEntry
+            {
+                Correct = isCorrect,
+                Date = DateTime.Now,
+                Statistic = wordStat.Statistic,
+                AnswerType = _db.AnswerTypes.Where(n => n.Id == 1).First(), //not implemented
+                HelperType = _db.HelperTypes.Where(n => n.Id == 1).First()  //not implemented
+            };
 
+            _db.Add(studyEntry);
             _db.Update(wordStat);
             _db.SaveChanges();
             return true;
@@ -151,9 +158,23 @@ namespace EFDataAccess.Repositories
 
             try
             {
+                //Creates list of IDs only that are learnt
+                var idsOfWordsAlreadyLearnt = _db.StudyEntries
+                    .Where(n => n.Correct == true)
+                    .GroupBy(n => n.Statistic.Id)
+                    .Select(group => new
+                    {
+                        StatisticId = group.Key,
+                        NoOfEntries = group.Count()
+                    })
+                    .Where(n => n.NoOfEntries >= timesCorrect)  //include only those ids that appear more than amount required for learning a word
+                    .Select(n => n.StatisticId)
+                    .ToList();
+
+                //Create list of Word types, that are not learnt
                 result = _db.Words.Include(a => a.GrammaticalGender)
                     .Where(a => a.UserId == userId)
-                    .Where(a => a.Statistic.TimesCorrect <= timesCorrect)
+                    .Where(a => !idsOfWordsAlreadyLearnt.Contains(a.StatisticId)) //Exclude those Ids that are learnt
                     .Include(a => a.LexicalCategory)
                     .Include(a => a.Statistic)
                     .ToList();
@@ -166,16 +187,14 @@ namespace EFDataAccess.Repositories
 
             return result;
         }
-        public bool RestartProgressForAll()
+        public bool RestartProgressForAll(string userId)
         {
+            List<StudyEntry> studyEntriesToRemove = GetAllStudyEntries(userId);
             try
             {
-                List<Word> words = _db.Words.Include(n => n.Statistic).ToList();
-                for (int i = 0; i < words.Count(); i++)
+                foreach (var entry in studyEntriesToRemove)
                 {
-                    words[i].Statistic.TimesCorrect = 0;
-                    words[i].Statistic.TimesIncorrect = 0;
-                    _db.Update(words[i]);
+                    _db.Remove(entry);
                 }
                 _db.SaveChanges();
                 return true;
@@ -188,12 +207,13 @@ namespace EFDataAccess.Repositories
         }
         public bool RestartProgress(int id)
         {
+            List<StudyEntry> studyEntriesToRemove = GetStudyEntries(id);
             try
             {
-                Word word = _db.Words.Include(n => n.Statistic).Where(n => n.Id == id).FirstOrDefault();
-                word.Statistic.TimesCorrect = 0;
-                word.Statistic.TimesIncorrect = 0;
-                _db.Update(word);
+                foreach (var entry in studyEntriesToRemove)
+                {
+                    _db.Remove(entry);
+                }
                 _db.SaveChanges();
                 return true;
             }
@@ -201,6 +221,88 @@ namespace EFDataAccess.Repositories
             {
                 _logger.LogError(ExceptionHelper.EF_QUERY_ERROR + ExceptionHelper.GetErrorMessage(e.Message));
                 return false;
+            }
+        }
+
+        public int GetWordsTimesCorrect(int id)
+        {
+            try
+            {
+                int statisticId = _db.Words.Where(n => n.Id == id).Select(n => n.StatisticId).First();
+                int result = _db.StudyEntries
+                    .Where(n => n.Statistic.Id == statisticId)
+                    .Where(n => n.Correct == true)
+                    .Count();
+                return result;
+            }
+            catch(Exception e)
+            {
+                _logger.LogError(ExceptionHelper.EF_QUERY_ERROR + ExceptionHelper.GetErrorMessage(e.Message));
+                return 0;
+            }
+        }
+        public int GetWordsTimesIncorrect(int id)
+        {
+            try
+            {
+                int statisticId = _db.Words.Where(n => n.Id == id).Select(n => n.StatisticId).First();
+                int result = _db.StudyEntries
+                    .Where(n => n.Statistic.Id == statisticId)
+                    .Where(n => n.Correct == false)
+                    .Count();
+                return result;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(ExceptionHelper.EF_QUERY_ERROR + ExceptionHelper.GetErrorMessage(e.Message));
+                return 0;
+            }
+        }
+        public int GetWordsTotalTrainedTimes(int id)
+        {
+            try
+            {
+                int statisticId = _db.Words.Where(n => n.Id == id).Select(n => n.StatisticId).First();
+                int result = _db.StudyEntries
+                    .Where(n => n.Statistic.Id == statisticId)
+                    .Count();
+                return result;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(ExceptionHelper.EF_QUERY_ERROR + ExceptionHelper.GetErrorMessage(e.Message));
+                return 0;
+            }
+        }
+
+        private List<StudyEntry> GetStudyEntries(int wordId)
+        {
+            try
+            {
+                int statisticId = _db.Words.Where(n => n.Id == wordId).Select(n => n.StatisticId).First();
+                List<int> studyEntryIds = _db.StudyEntries.Where(n => n.Statistic.Id == statisticId).Select(n => n.Id).ToList();
+                List<StudyEntry> studyEntriesToRemove = _db.StudyEntries.Where(n => studyEntryIds.Contains(n.Id)).ToList();
+                return studyEntriesToRemove;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(ExceptionHelper.EF_QUERY_ERROR + ExceptionHelper.GetErrorMessage(e.Message));
+                return new List<StudyEntry>();
+            }
+        }
+        private List<StudyEntry> GetAllStudyEntries(string userId)
+        {
+            try
+            {
+                List<int> statisticIds = _db.Words.Where(n => n.UserId == userId).Select(n => n.StatisticId).ToList();
+                List<int> studyEntryIds = _db.StudyEntries.Where(n => statisticIds.Contains(n.Statistic.Id)).Select(n => n.Id).ToList();
+                List<StudyEntry> studyEntriesToRemove = _db.StudyEntries.Where(n => studyEntryIds.Contains(n.Id)).ToList();
+                return studyEntriesToRemove;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(ExceptionHelper.EF_QUERY_ERROR + ExceptionHelper.GetErrorMessage(e.Message));
+                return new List<StudyEntry>();
             }
         }
     }

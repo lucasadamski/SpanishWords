@@ -15,6 +15,7 @@ namespace SpanishWords.Web.Controllers
     {
         
         private IWordRepository _wordRepository;
+        private const int CORRECT_ANSWERS_TO_LEARN = 3;
 
         public WordController(IWordRepository wordRepository)
         {
@@ -27,6 +28,15 @@ namespace SpanishWords.Web.Controllers
 
 
             wordViewModel.Words = _wordRepository.GetAllWords(User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList(); //string z userId
+
+            for (int i = 0; i < wordViewModel.Words.Count(); i++)
+            {
+                wordViewModel.TimesCorrect.Add(_wordRepository.GetWordsTimesCorrect(wordViewModel.Words.ElementAt(i).Id));
+                wordViewModel.TimesIncorrect.Add(_wordRepository.GetWordsTimesIncorrect(wordViewModel.Words.ElementAt(i).Id));
+                wordViewModel.TimesTrained.Add(wordViewModel.TimesCorrect.Last() + wordViewModel.TimesIncorrect.Last() );
+            }
+
+            wordViewModel.TimesCorrectForLearning = 3;
 
             return View(wordViewModel);
             
@@ -60,7 +70,7 @@ namespace SpanishWords.Web.Controllers
             wordViewModel.Word.English = wordViewModel.Word.English.Trim();
 
             wordViewModel.Word.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);  //przypisanie id z Identity
-            wordViewModel.Word.StatisticId = _wordRepository.CreateAndAddStatistic().Id;
+            wordViewModel.Word.StatisticId = _wordRepository.CreateAndAddStatistic(CORRECT_ANSWERS_TO_LEARN).Id;
             _wordRepository.Add(wordViewModel.Word);
 
             return RedirectToAction("Add");
@@ -112,9 +122,9 @@ namespace SpanishWords.Web.Controllers
         
         public IActionResult RestartProgressForAllWords()
         {
-            _wordRepository.RestartProgressForAll();
+            _wordRepository.RestartProgressForAll(User.FindFirstValue(ClaimTypes.NameIdentifier));
             WordViewModel wordViewModel = new WordViewModel();
-            wordViewModel.Words = _wordRepository.GetAllWords(User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList(); //string z userId
+            LoadAllWordsFromRepository(wordViewModel);
             return View("Index", wordViewModel);
         }
 
@@ -122,8 +132,22 @@ namespace SpanishWords.Web.Controllers
         {
             _wordRepository.RestartProgress(id);
             WordViewModel wordViewModel = new WordViewModel();
-            wordViewModel.Words = _wordRepository.GetAllWords(User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList(); //string z userId
+            LoadAllWordsFromRepository(wordViewModel);
             return View("Index", wordViewModel);
         }
+
+        private void LoadAllWordsFromRepository(WordViewModel wordViewModel)
+        {
+            wordViewModel.Words = _wordRepository.GetAllWords(User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList(); //string z userId
+            for (int i = 0; i < wordViewModel.Words.Count(); i++)
+            {
+                int id = wordViewModel.Words.ElementAt(i).Id;
+                wordViewModel.TimesCorrect.Add(_wordRepository.GetWordsTimesCorrect(id));
+                wordViewModel.TimesIncorrect.Add(_wordRepository.GetWordsTimesIncorrect(id));
+                wordViewModel.TimesTrained.Add(_wordRepository.GetWordsTotalTrainedTimes(id));
+            }
+            wordViewModel.TimesCorrectForLearning = CORRECT_ANSWERS_TO_LEARN;
+        }
     }
+       
 }

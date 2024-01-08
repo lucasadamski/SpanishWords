@@ -13,5 +13,11 @@ namespace SpanishWords.Web.Models
         public IEnumerable<SelectListItem> GrammaticalGenders { get; set; }
 
         public IEnumerable<SelectListItem> LexicalCategories { get; set; }
+
+        public int TimesCorrectForLearning { get; set; }
+
+        public List<int> TimesCorrect = new List<int>();
+        public List<int> TimesIncorrect = new List<int>();
+        public List<int> TimesTrained = new List<int>();
     }
 }

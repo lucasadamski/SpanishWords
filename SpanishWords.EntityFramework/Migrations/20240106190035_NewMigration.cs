@@ -8,11 +8,24 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SpanishWords.EntityFramework.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class NewMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "AnswerTypes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "varchar(9)", maxLength: 9, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AnswerTypes", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -68,6 +81,19 @@ namespace SpanishWords.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "HelperTypes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "varchar(9)", maxLength: 9, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HelperTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "LexicalCategories",
                 columns: table => new
                 {
@@ -86,11 +112,10 @@ namespace SpanishWords.EntityFramework.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TimesCorrect = table.Column<int>(type: "int", nullable: false),
-                    TimesIncorrect = table.Column<int>(type: "int", nullable: false),
                     CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastUpdated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CorrectAnswersToLearn = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -204,6 +229,42 @@ namespace SpanishWords.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "StudyEntries",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AnswerDuration = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Correct = table.Column<bool>(type: "bit", nullable: false),
+                    AnswerTypeId = table.Column<int>(type: "int", nullable: false),
+                    HelperTypeId = table.Column<int>(type: "int", nullable: false),
+                    StatisticId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StudyEntries", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_StudyEntries_AnswerTypes_AnswerTypeId",
+                        column: x => x.AnswerTypeId,
+                        principalTable: "AnswerTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_StudyEntries_HelperTypes_HelperTypeId",
+                        column: x => x.HelperTypeId,
+                        principalTable: "HelperTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_StudyEntries_Statistics_StatisticId",
+                        column: x => x.StatisticId,
+                        principalTable: "Statistics",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Words",
                 columns: table => new
                 {
@@ -239,12 +300,32 @@ namespace SpanishWords.EntityFramework.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "AnswerTypes",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Text" },
+                    { 2, "Quiz" },
+                    { 3, "Card" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "GrammaticalGenders",
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
                     { 1, "Masculine" },
                     { 2, "Feminine" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "HelperTypes",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "None" },
+                    { 2, "Letter" },
+                    { 3, "Sentence" }
                 });
 
             migrationBuilder.InsertData(
@@ -297,6 +378,21 @@ namespace SpanishWords.EntityFramework.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_StudyEntries_AnswerTypeId",
+                table: "StudyEntries",
+                column: "AnswerTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudyEntries_HelperTypeId",
+                table: "StudyEntries",
+                column: "HelperTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudyEntries_StatisticId",
+                table: "StudyEntries",
+                column: "StatisticId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Words_GrammaticalGenderId",
                 table: "Words",
                 column: "GrammaticalGenderId");
@@ -332,6 +428,9 @@ namespace SpanishWords.EntityFramework.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "StudyEntries");
+
+            migrationBuilder.DropTable(
                 name: "Words");
 
             migrationBuilder.DropTable(
@@ -339,6 +438,12 @@ namespace SpanishWords.EntityFramework.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "AnswerTypes");
+
+            migrationBuilder.DropTable(
+                name: "HelperTypes");
 
             migrationBuilder.DropTable(
                 name: "GrammaticalGenders");

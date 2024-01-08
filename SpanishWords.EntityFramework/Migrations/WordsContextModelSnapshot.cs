@@ -159,6 +159,41 @@ namespace SpanishWords.EntityFramework.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("SpanishWords.Models.AnswerType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(9)
+                        .HasColumnType("varchar(6)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AnswerTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Text"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Quiz"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Card"
+                        });
+                });
+
             modelBuilder.Entity("SpanishWords.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -264,6 +299,41 @@ namespace SpanishWords.EntityFramework.Migrations
                         });
                 });
 
+            modelBuilder.Entity("SpanishWords.Models.HelperType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(9)
+                        .HasColumnType("varchar(9)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("HelperTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "None"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Letter"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Sentence"
+                        });
+                });
+
             modelBuilder.Entity("SpanishWords.Models.LexicalCategory", b =>
                 {
                     b.Property<int>("Id")
@@ -307,6 +377,9 @@ namespace SpanishWords.EntityFramework.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("CorrectAnswersToLearn")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
@@ -316,15 +389,46 @@ namespace SpanishWords.EntityFramework.Migrations
                     b.Property<DateTime>("LastUpdated")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("TimesCorrect")
+                    b.HasKey("Id");
+
+                    b.ToTable("Statistics");
+                });
+
+            modelBuilder.Entity("SpanishWords.Models.StudyEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("TimesIncorrect")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("AnswerDuration")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("AnswerTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Correct")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("HelperTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StatisticId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Statistics");
+                    b.HasIndex("AnswerTypeId");
+
+                    b.HasIndex("HelperTypeId");
+
+                    b.HasIndex("StatisticId");
+
+                    b.ToTable("StudyEntries");
                 });
 
             modelBuilder.Entity("SpanishWords.Models.Word", b =>
@@ -421,6 +525,33 @@ namespace SpanishWords.EntityFramework.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SpanishWords.Models.StudyEntry", b =>
+                {
+                    b.HasOne("SpanishWords.Models.AnswerType", "AnswerType")
+                        .WithMany("StudyEntry")
+                        .HasForeignKey("AnswerTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SpanishWords.Models.HelperType", "HelperType")
+                        .WithMany("StudyEntry")
+                        .HasForeignKey("HelperTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SpanishWords.Models.Statistic", "Statistic")
+                        .WithMany("StudyEntry")
+                        .HasForeignKey("StatisticId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AnswerType");
+
+                    b.Navigation("HelperType");
+
+                    b.Navigation("Statistic");
+                });
+
             modelBuilder.Entity("SpanishWords.Models.Word", b =>
                 {
                     b.HasOne("SpanishWords.Models.GrammaticalGender", "GrammaticalGender")
@@ -446,9 +577,19 @@ namespace SpanishWords.EntityFramework.Migrations
                     b.Navigation("Statistic");
                 });
 
+            modelBuilder.Entity("SpanishWords.Models.AnswerType", b =>
+                {
+                    b.Navigation("StudyEntry");
+                });
+
             modelBuilder.Entity("SpanishWords.Models.GrammaticalGender", b =>
                 {
                     b.Navigation("Words");
+                });
+
+            modelBuilder.Entity("SpanishWords.Models.HelperType", b =>
+                {
+                    b.Navigation("StudyEntry");
                 });
 
             modelBuilder.Entity("SpanishWords.Models.LexicalCategory", b =>
@@ -458,6 +599,8 @@ namespace SpanishWords.EntityFramework.Migrations
 
             modelBuilder.Entity("SpanishWords.Models.Statistic", b =>
                 {
+                    b.Navigation("StudyEntry");
+
                     b.Navigation("Word")
                         .IsRequired();
                 });

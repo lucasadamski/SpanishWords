@@ -1,0 +1,41 @@
+﻿@model StatsViewModel
+
+<h1>Statistics</h1>
+
+@{
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">English</th>
+                <th scope="col">Spanish</th>
+                <th scope="col">Date added</th>
+                <th scope="col">Date learned</th>
+                <th scope="col">Time needed to learn</th>
+              
+               
+
+            </tr>
+        </thead>
+        <tbody>
+
+            @{
+                for (int i = 0; i < Model.Words.Count(); i++)
+                {
+                    <tr>
+                        <th scope="row">@(i + 1)</th>
+                        <td><p>@Model.Words[i].English</p></td>
+                        <td>@Model.Words.ElementAt(i).Spanish</td>
+                       
+                    </tr>
+                }
+
+                
+               
+            }
+        </tbody>
+    </table>
+
+
+}

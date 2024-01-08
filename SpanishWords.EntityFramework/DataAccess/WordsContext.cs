@@ -19,6 +19,10 @@ namespace EFDataAccess.DataAccess
         public DbSet<Statistic> Statistics { get; set; }
         public DbSet<LexicalCategory> LexicalCategories { get; set; }
         public DbSet<GrammaticalGender> GrammaticalGenders { get; set; }
+        public DbSet<StudyEntry> StudyEntries { get; set; }
+        public DbSet<AnswerType> AnswerTypes { get; set; }
+        public DbSet<HelperType> HelperTypes { get; set; }
+
 
         public WordsContext(DbContextOptions<WordsContext> options) : base(options) { }
        
@@ -30,31 +34,17 @@ namespace EFDataAccess.DataAccess
             modelBuilder.Entity<ApplicationUser>().Property(e => e.FirstName).HasMaxLength(250);
             modelBuilder.Entity<ApplicationUser>().Property(e => e.LastName).HasMaxLength(250);
 
-            /*
-            modelBuilder.Entity<Statistic>().HasData(
-                new Statistic { Id = 1, CreateDate = new DateTime(), LastUpdated = new DateTime(), TimesCorrect = 0, TimesIncorrect = 0},
-                new Statistic { Id = 2, CreateDate = new DateTime(), LastUpdated = new DateTime(), TimesCorrect = 0, TimesIncorrect = 0},
-                new Statistic { Id = 3, CreateDate = new DateTime(), LastUpdated = new DateTime(), TimesCorrect = 0, TimesIncorrect = 0},
-                new Statistic { Id = 4, CreateDate = new DateTime(), LastUpdated = new DateTime(), TimesCorrect = 0, TimesIncorrect = 0},
-                new Statistic { Id = 5, CreateDate = new DateTime(), LastUpdated = new DateTime(), TimesCorrect = 0, TimesIncorrect = 0},
-                new Statistic { Id = 6, CreateDate = new DateTime(), LastUpdated = new DateTime(), TimesCorrect = 0, TimesIncorrect = 0},
-                new Statistic { Id = 7, CreateDate = new DateTime(), LastUpdated = new DateTime(), TimesCorrect = 0, TimesIncorrect = 0},
-                new Statistic { Id = 8, CreateDate = new DateTime(), LastUpdated = new DateTime(), TimesCorrect = 0, TimesIncorrect = 0},
-                new Statistic { Id = 9, CreateDate = new DateTime(), LastUpdated = new DateTime(), TimesCorrect = 0, TimesIncorrect = 0},
-                new Statistic { Id = 10, CreateDate = new DateTime(), LastUpdated = new DateTime(), TimesCorrect = 0, TimesIncorrect = 0},
-                new Statistic { Id = 11, CreateDate = new DateTime(), LastUpdated = new DateTime(), TimesCorrect = 0, TimesIncorrect = 0},
-                new Statistic { Id = 12, CreateDate = new DateTime(), LastUpdated = new DateTime(), TimesCorrect = 0, TimesIncorrect = 0},
-                new Statistic { Id = 13, CreateDate = new DateTime(), LastUpdated = new DateTime(), TimesCorrect = 0, TimesIncorrect = 0},
-                new Statistic { Id = 14, CreateDate = new DateTime(), LastUpdated = new DateTime(), TimesCorrect = 0, TimesIncorrect = 0},
-                new Statistic { Id = 15, CreateDate = new DateTime(), LastUpdated = new DateTime(), TimesCorrect = 0, TimesIncorrect = 0}
-            );
-
-             modelBuilder.Entity<Word>().HasData(
-                new Word { Id = 1, Spanish = "coche", English = "car", LexicalCategoryId = 1, GrammaticalGenderId = 1, UserId = "1", StatisticId = 1},
-                new Word { Id = 2, Spanish = "gato", English = "cat", LexicalCategoryId = 1, GrammaticalGenderId = 1, UserId = "1", StatisticId = 2 },
-                new Word { Id = 3, Spanish = "perro", English = "dog", LexicalCategoryId = 1, GrammaticalGenderId = 1, UserId = "1", StatisticId = 3 }
+            modelBuilder.Entity<HelperType>().HasData(
+                new HelperType { Id = 1, Name = "None"},
+                new HelperType { Id = 2, Name = "Letter" },
+                new HelperType { Id = 3, Name = "Sentence" }
                 );
-        */
+
+            modelBuilder.Entity<AnswerType>().HasData(
+                new AnswerType { Id = 1, Name = "Text" },
+                new AnswerType { Id = 2, Name = "Quiz" },
+                new AnswerType { Id = 3, Name = "Card" }
+                );
 
             modelBuilder.Entity<LexicalCategory>().HasData(
                 new LexicalCategory { Id = 1, Name = "Noun" },

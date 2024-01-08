@@ -12,19 +12,18 @@ namespace SpanishWords.Models
     {
         public int Id { get; set; }
         [Required]
-        public int TimesCorrect { get; set; }
-        [Required]
-        public int TimesIncorrect { get; set; }
-        [Required]
         public DateTime CreateDate { get; set; }
         [Required]
         public DateTime LastUpdated { get; set; }
         public DateTime? DeleteTime { get; set; }
+        [Required]
+        public int CorrectAnswersToLearn { get; set; }
 
         /***********************
         *       Realtions     *
         * *********************/
         public Word Word { get; set; }
+        public ICollection<StudyEntry> StudyEntry { get; set; }
 
 
 
