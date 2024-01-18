@@ -133,7 +133,8 @@ namespace SpanishWords.Web.Controllers
             _wordRepository.RestartProgress(id);
             WordViewModel wordViewModel = new WordViewModel();
             LoadAllWordsFromRepository(wordViewModel);
-            return View("Index", wordViewModel);
+            //return View("Index", wordViewModel);
+            return RedirectToAction("Index", "Word");
         }
 
         private void LoadAllWordsFromRepository(WordViewModel wordViewModel)

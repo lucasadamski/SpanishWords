@@ -1,6 +1,7 @@
 ﻿@model WordViewModel
 
 
+
 <div>
     <h1>Words from database</h1>
     <p>Those records are loaded from database.</p>
@@ -22,6 +23,8 @@
 
             </tr>
         </thead>
+                        
+                    
         <tbody>
                 
                 @{
@@ -46,14 +49,14 @@
                                 </form>
                             </td>
                             <td>
-                                <form id="delete-word-form-@i" onsubmit="deleteWordAction(event, @i)" asp-controller="Word" asp-action="Delete" asp-route-id="@Model.Words[i].Id" method="GET">
-                                    <button type="submit" class="btn btn-primary">Delete</button>
-                                </form>
+                                <!--<form id="delete-word-form-@i" onsubmit="deleteWordAction(event, @i)" asp-controller="Word" asp-action="Delete" asp-route-id="@Model.Words[i].Id" method="GET">
+                                    <button class="btn btn-primary">Delete</button>
+                                </form>-->
+                                <button onclick="deleteOneWord(@Model.Words.ElementAt(i).Id)" class="btn btn-primary">Delete</button>
                             </td>
                             <td>
-                                <form id="restart-progress-for-one-word-form-@i" onsubmit="resetProgressForOneWordAction(event, @i)" asp-controller="Word" asp-action="RestartProgressForOneWord" asp-route-id="@Model.Words[i].Id" method="GET">
-                                    <button type="submit" class="btn btn-primary">Reset Progress</button>
-                                </form>
+                                <!--KLADUIA please help: Nie wiem jak zrobić żeby ajax odświeżył widok po kliknięciu w przycisk-->
+                                <button onclick="resetProgressForOneWord(@Model.Words.ElementAt(i).Id)" class="btn btn-primary">Reset Progress</button>
                             </td>
 
                     </tr>
@@ -62,7 +65,7 @@
                     <form id="restart-progress-for-all-words-form" onsubmit="resetProgressForAllAction(event)" asp-controller="Word" asp-action="RestartProgressForAllWords" method="GET">
                         <button type="submit" class="btn btn-primary position-relative top-0 start-50">Reset Progress For All Words</button>
                     </form>
-                    @section Scripts{
+                   @section scripts {
                         <script type="text/javascript">
                             function resetProgressForAllAction(e) {
                                 e.preventDefault();
@@ -76,23 +79,9 @@
                                         const restartForm = document.getElementById('restart-progress-for-all-words-form');
                                         restartForm.submit();
                                     }
-                                })                      
-                            }
-
-                            function resetProgressForOneWordAction(e, idNumber) {
-                                e.preventDefault();
-                                Swal.fire({
-                                    title: 'Do you want to reset progress for this word?',
-                                    icon: 'question',
-                                    showCancelButton: true
-                                }).then(result => {
-                                    if (result.isConfirmed) {
-                                        const restartOneWordForm = document.getElementById(`restart-progress-for-one-word-form-${idNumber}`);
-                                        restartOneWordForm.submit();
-                                    }
                                 })
                             }
-
+                            
                             function deleteWordAction(e, idNumber) {
                                 e.preventDefault();
                                 Swal.fire({
@@ -106,8 +95,52 @@
                                     }
                                 })
                             }
+
+                            function deleteOneWord(wordId) {
+                                Swal.fire({
+                                    title: 'Do you want to delete this word?',
+                                    icon: 'question',
+                                    showCancelButton: true
+                                }).then(result => {
+                                    if (result.isConfirmed) {
+                                        $.ajax({
+                                            url: "@Url.Action("Delete", "Word")",
+                                            type: 'GET',
+                                            data: {
+                                                id: wordId
+                                            },
+                                            success: function (res) {
+                                                console.log('Deleted one word.');
+                                                document.reload(); //KLAUDIA please help -> ajax nie odświeża strony
+                                            }
+                                        });
+                                    }
+                                })
+                            }
+
+                            function resetProgressForOneWord(wordId) {
+                                Swal.fire({
+                                    title: 'Do you want to reset progress for this word?',
+                                    icon: 'question',
+                                    showCancelButton: true
+                                }).then(result => {
+                                    if (result.isConfirmed) {
+                                        $.ajax({
+                                            url: "@Url.Action("RestartProgressForOneWord", "Word")",
+                                            type: 'GET',
+                                            data: {
+                                                id: wordId
+                                            },
+                                            success: function (res) {
+                                                console.log('Progress for one word resetted.');
+                                                document.reload(); //KLAUDIA please help -> ajax nie odświeża strony
+                                            }
+                                        });
+                                    }
+                                })
+                            }
                         </script>
-                    }
+                   }
                 }                
         </tbody>
     </table>
