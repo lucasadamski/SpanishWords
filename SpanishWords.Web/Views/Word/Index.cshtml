@@ -26,40 +26,34 @@
                         
                     
         <tbody>
-                
                 @{
                     for (int i = 0; i < Model.Words.Count(); i++)
                     {
                         string tableBackgroudClass;
                         if (@Model.TimesCorrect.ElementAt(i) >= Model.TimesCorrectForLearning) tableBackgroudClass = "bg-success";
                         else tableBackgroudClass = "bg-warning";
-   
-                    <tr>
-                            <th scope="row">@(i+1)</th>
-                            <td><p>@Model.Words[i].English</p></td>
-                            <td>@Model.Words.ElementAt(i).Spanish</td>
-                            <td>@Model.Words.ElementAt(i).GrammaticalGender?.Name</td>
-                            <td>@Model.Words.ElementAt(i).LexicalCategory?.Name</td>
-                            <td class="@tableBackgroudClass">@Model.TimesCorrect.ElementAt(i)</td>
-                            <td>@Model.TimesIncorrect.ElementAt(i)</td>
-                            <td>@Model.TimesTrained.ElementAt(i)</td>
-                            <td>
-                                <form asp-controller="Word" asp-action="Edit" asp-route-id="@Model.Words[i].Id" method="GET">
-                                    <button type="submit" class="btn btn-primary">Edit</button>
-                                </form>
-                            </td>
-                            <td>
-                                <!--<form id="delete-word-form-@i" onsubmit="deleteWordAction(event, @i)" asp-controller="Word" asp-action="Delete" asp-route-id="@Model.Words[i].Id" method="GET">
-                                    <button class="btn btn-primary">Delete</button>
-                                </form>-->
-                                <button onclick="deleteOneWord(@Model.Words.ElementAt(i).Id)" class="btn btn-primary">Delete</button>
-                            </td>
-                            <td>
-                                <!--KLADUIA please help: Nie wiem jak zrobić żeby ajax odświeżył widok po kliknięciu w przycisk-->
-                                <button onclick="resetProgressForOneWord(@Model.Words.ElementAt(i).Id)" class="btn btn-primary">Reset Progress</button>
-                            </td>
-
-                    </tr>
+                        <tr>
+                                <th scope="row">@(i+1)</th>
+                                <td><p>@Model.Words[i].English</p></td>
+                                <td>@Model.Words.ElementAt(i).Spanish</td>
+                                <td>@Model.Words.ElementAt(i).GrammaticalGender?.Name</td>
+                                <td>@Model.Words.ElementAt(i).LexicalCategory?.Name</td>
+                                <td class="@tableBackgroudClass">@Model.TimesCorrect.ElementAt(i)</td>
+                                <td>@Model.TimesIncorrect.ElementAt(i)</td> <!---KLAUDIA: Nie mogę zmienić na foreach gdyż mam inną listę w modelu --->
+                                <td>@Model.TimesTrained.ElementAt(i)</td>
+                                <td>
+                                    <form asp-controller="Word" asp-action="Edit" asp-route-id="@Model.Words[i].Id" method="GET">
+                                        <button type="submit" class="btn btn-primary">Edit</button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <button onclick="deleteOneWord(@Model.Words.ElementAt(i).Id)" class="btn btn-primary">Delete</button>
+                                </td>
+                                <td>
+                                    <!--KLADUIA please help: Nie wiem jak zrobić żeby ajax odświeżył widok po kliknięciu w przycisk-->
+                                    <button onclick="resetProgressForOneWord(@Model.Words.ElementAt(i).Id)" class="btn btn-primary">Reset Progress</button>
+                                </td>
+                        </tr>
                     }
                    
                     <form id="restart-progress-for-all-words-form" onsubmit="resetProgressForAllAction(event)" asp-controller="Word" asp-action="RestartProgressForAllWords" method="GET">
