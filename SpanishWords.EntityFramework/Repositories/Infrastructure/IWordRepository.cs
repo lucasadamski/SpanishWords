@@ -13,6 +13,7 @@ namespace EFDataAccess.Repositories.Infrastructure
         bool Add(Word word);
         Word GetWordById(int id);
         public IEnumerable<Word> GetAllWords(string userId);
+        public IEnumerable<Word> GetAllWords();
         public IEnumerable<Word> GetAllNotLearntWords(string userId, int timesCorrect);
         bool Edit(Word word);
         bool Delete(Word word);
