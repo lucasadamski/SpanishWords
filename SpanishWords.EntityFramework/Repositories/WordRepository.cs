@@ -117,12 +117,15 @@ namespace EFDataAccess.Repositories
 
         public Word GetRandomWord()
         {
-            if (_db.Words == null || _db.Words.Count() < 1)
+            try
             {
-                _logger.LogError(ExceptionHelper.EMPTY_VARIABLE);
+                return (_db.Words.ToList())[RandomNumberGenerator.GetInt32(_db.Words.Count())];
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(ExceptionHelper.EF_QUERY_ERROR + ExceptionHelper.GetErrorMessage(e.Message));
                 return new Word();
             }
-            else return (_db.Words.ToList())[RandomNumberGenerator.GetInt32(_db.Words.Count())];
         }
 
 
