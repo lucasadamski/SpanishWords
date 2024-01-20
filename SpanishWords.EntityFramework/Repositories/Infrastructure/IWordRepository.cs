@@ -15,6 +15,7 @@ namespace EFDataAccess.Repositories.Infrastructure
         public IEnumerable<Word> GetAllWords(string userId);
         public IEnumerable<Word> GetAllWords();
         public IEnumerable<Word> GetAllNotLearntWords(string userId, int timesCorrect);
+        public IEnumerable<Word> GetAllLearntWords(string userId, int timesCorrect);
         bool Edit(Word word);
         bool Delete(Word word);
         Statistic CreateAndAddStatistic(int numberOfAnswersToLearnTheWord);
@@ -27,6 +28,7 @@ namespace EFDataAccess.Repositories.Infrastructure
         public int GetWordsTimesCorrect(int id);
         public int GetWordsTimesIncorrect(int id);
         public int GetWordsTotalTrainedTimes(int id);
-
+        public List<StudyEntry> GetAllStudyEntries(string userId);
+        public List<StudyEntry> GetStudyEntries(int wordId);
     }
 }

@@ -210,6 +210,48 @@ namespace EFDataAccess.Repositories
 
             return result;
         }
+
+        public IEnumerable<Word> GetAllLearntWords(string userId, int timesCorrect)
+        {
+            if (userId == null)
+            {
+                _logger.LogError(DBExceptionHelper.EMPTY_VARIABLE);
+                return new List<Word>();
+            }
+
+            IEnumerable<Word> result;
+
+            try
+            {
+                //Creates list of IDs only that are learnt
+                var idsOfWordsAlreadyLearnt = _db.StudyEntries
+                    .Where(n => n.Correct == true)
+                    .GroupBy(n => n.Statistic.Id)
+                    .Select(group => new
+                    {
+                        StatisticId = group.Key,
+                        NoOfEntries = group.Count()
+                    })
+                    .Where(n => n.NoOfEntries >= timesCorrect)  //include only those ids that appear more than amount required for learning a word
+                    .Select(n => n.StatisticId)
+                    .ToList();
+
+                //Create list of Word types, that are not learnt
+                result = _db.Words.Include(a => a.GrammaticalGender)
+                    .Where(a => a.UserId == userId)
+                    .Where(a => idsOfWordsAlreadyLearnt.Contains(a.StatisticId)) //Include those Ids that are learnt
+                    .Include(a => a.LexicalCategory)
+                    .Include(a => a.Statistic)
+                    .ToList();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(DBExceptionHelper.EF_QUERY_ERROR + DBExceptionHelper.GetErrorMessage(e.Message));
+                return new List<Word>();
+            }
+
+            return result;
+        }
         public bool RestartProgressForAll(string userId)
         {
             List<StudyEntry> studyEntriesToRemove = GetAllStudyEntries(userId);
@@ -298,7 +340,7 @@ namespace EFDataAccess.Repositories
             }
         }
 
-        private List<StudyEntry> GetStudyEntries(int wordId)
+        public List<StudyEntry> GetStudyEntries(int wordId)
         {
             try
             {
@@ -313,7 +355,7 @@ namespace EFDataAccess.Repositories
                 return new List<StudyEntry>();
             }
         }
-        private List<StudyEntry> GetAllStudyEntries(string userId)
+        public List<StudyEntry> GetAllStudyEntries(string userId)
         {
             try
             {
