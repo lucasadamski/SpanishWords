@@ -40,7 +40,7 @@ namespace EFDataAccess.Repositories
         {
             if (userId == null)
             {
-                _logger.LogError(ExceptionHelper.EMPTY_VARIABLE);
+                _logger.LogError(DBExceptionHelper.EMPTY_VARIABLE);
                 return new List<Word>();
             }
 
@@ -56,7 +56,7 @@ namespace EFDataAccess.Repositories
             }
             catch (Exception e)
             {
-                _logger.LogError(ExceptionHelper.EF_QUERY_ERROR + ExceptionHelper.GetErrorMessage(e.Message));
+                _logger.LogError(DBExceptionHelper.EF_QUERY_ERROR + DBExceptionHelper.GetErrorMessage(e.Message));
                 return new List<Word>();
             }
 
@@ -76,7 +76,7 @@ namespace EFDataAccess.Repositories
             }
             catch (Exception e)
             {
-                _logger.LogError(ExceptionHelper.EF_QUERY_ERROR + ExceptionHelper.GetErrorMessage(e.Message));
+                _logger.LogError(DBExceptionHelper.EF_QUERY_ERROR + DBExceptionHelper.GetErrorMessage(e.Message));
                 return new List<Word>();
             }
 
@@ -117,7 +117,7 @@ namespace EFDataAccess.Repositories
             }
             catch(Exception e)
             {
-                _logger.LogError(ExceptionHelper.EF_QUERY_ERROR + ExceptionHelper.GetErrorMessage(e.Message));
+                _logger.LogError(DBExceptionHelper.EF_QUERY_ERROR + DBExceptionHelper.GetErrorMessage(e.Message));
                 return new List<GrammaticalGender>();
             }
         }
@@ -130,7 +130,7 @@ namespace EFDataAccess.Repositories
             }
             catch (Exception e)
             {
-                _logger.LogError(ExceptionHelper.EF_QUERY_ERROR + ExceptionHelper.GetErrorMessage(e.Message));
+                _logger.LogError(DBExceptionHelper.EF_QUERY_ERROR + DBExceptionHelper.GetErrorMessage(e.Message));
                 return new List<LexicalCategory>();
             }
         }
@@ -143,7 +143,7 @@ namespace EFDataAccess.Repositories
             }
             catch (Exception e)
             {
-                _logger.LogError(ExceptionHelper.EF_QUERY_ERROR + ExceptionHelper.GetErrorMessage(e.Message));
+                _logger.LogError(DBExceptionHelper.EF_QUERY_ERROR + DBExceptionHelper.GetErrorMessage(e.Message));
                 return new Word();
             }
         }
@@ -173,7 +173,7 @@ namespace EFDataAccess.Repositories
         {
             if (userId == null)
             {
-                _logger.LogError(ExceptionHelper.EMPTY_VARIABLE);
+                _logger.LogError(DBExceptionHelper.EMPTY_VARIABLE);
                 return new List<Word>();
             }
 
@@ -204,7 +204,7 @@ namespace EFDataAccess.Repositories
             }
             catch (Exception e)
             {
-                _logger.LogError(ExceptionHelper.EF_QUERY_ERROR + ExceptionHelper.GetErrorMessage(e.Message));
+                _logger.LogError(DBExceptionHelper.EF_QUERY_ERROR + DBExceptionHelper.GetErrorMessage(e.Message));
                 return new List<Word>();
             }
 
@@ -224,7 +224,7 @@ namespace EFDataAccess.Repositories
             }
             catch(Exception e)
             {
-                _logger.LogError(ExceptionHelper.EF_QUERY_ERROR + ExceptionHelper.GetErrorMessage(e.Message));
+                _logger.LogError(DBExceptionHelper.EF_QUERY_ERROR + DBExceptionHelper.GetErrorMessage(e.Message));
                 return false;
             }
         }
@@ -242,7 +242,7 @@ namespace EFDataAccess.Repositories
             }
             catch (Exception e)
             {
-                _logger.LogError(ExceptionHelper.EF_QUERY_ERROR + ExceptionHelper.GetErrorMessage(e.Message));
+                _logger.LogError(DBExceptionHelper.EF_QUERY_ERROR + DBExceptionHelper.GetErrorMessage(e.Message));
                 return false;
             }
         }
@@ -260,7 +260,7 @@ namespace EFDataAccess.Repositories
             }
             catch(Exception e)
             {
-                _logger.LogError(ExceptionHelper.EF_QUERY_ERROR + ExceptionHelper.GetErrorMessage(e.Message));
+                _logger.LogError(DBExceptionHelper.EF_QUERY_ERROR + DBExceptionHelper.GetErrorMessage(e.Message));
                 return 0;
             }
         }
@@ -277,7 +277,7 @@ namespace EFDataAccess.Repositories
             }
             catch (Exception e)
             {
-                _logger.LogError(ExceptionHelper.EF_QUERY_ERROR + ExceptionHelper.GetErrorMessage(e.Message));
+                _logger.LogError(DBExceptionHelper.EF_QUERY_ERROR + DBExceptionHelper.GetErrorMessage(e.Message));
                 return 0;
             }
         }
@@ -293,7 +293,7 @@ namespace EFDataAccess.Repositories
             }
             catch (Exception e)
             {
-                _logger.LogError(ExceptionHelper.EF_QUERY_ERROR + ExceptionHelper.GetErrorMessage(e.Message));
+                _logger.LogError(DBExceptionHelper.EF_QUERY_ERROR + DBExceptionHelper.GetErrorMessage(e.Message));
                 return 0;
             }
         }
@@ -309,7 +309,7 @@ namespace EFDataAccess.Repositories
             }
             catch (Exception e)
             {
-                _logger.LogError(ExceptionHelper.EF_QUERY_ERROR + ExceptionHelper.GetErrorMessage(e.Message));
+                _logger.LogError(DBExceptionHelper.EF_QUERY_ERROR + DBExceptionHelper.GetErrorMessage(e.Message));
                 return new List<StudyEntry>();
             }
         }
@@ -324,7 +324,7 @@ namespace EFDataAccess.Repositories
             }
             catch (Exception e)
             {
-                _logger.LogError(ExceptionHelper.EF_QUERY_ERROR + ExceptionHelper.GetErrorMessage(e.Message));
+                _logger.LogError(DBExceptionHelper.EF_QUERY_ERROR + DBExceptionHelper.GetErrorMessage(e.Message));
                 return new List<StudyEntry>();
             }
         }

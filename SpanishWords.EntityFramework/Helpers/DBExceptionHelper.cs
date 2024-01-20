@@ -1,6 +1,6 @@
 ﻿namespace SpanishWords.EntityFramework.Helpers
 {
-    public static class ExceptionHelper
+    public static class DBExceptionHelper
     {
         public const string EMPTY_VARIABLE = "Variable is empty or null. ";
         public const string DATABASE_CONNECTION_ERROR = "Cannot connect to database. ";
