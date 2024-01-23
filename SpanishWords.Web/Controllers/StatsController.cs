@@ -92,7 +92,5 @@ namespace SpanishWords.Web.Controllers
 
             stats.AverageQuestionCountPerWord = questionsCount / wordsCount;
         }
-
-
     }
 }
