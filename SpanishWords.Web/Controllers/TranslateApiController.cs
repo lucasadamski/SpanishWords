@@ -23,44 +23,36 @@ namespace SpanishWords.Web.Controllers
         }
 
         //localhost:7057/api/TranslateApi/translate?word=a
-        [HttpGet("translate")] //KLAUDIA PLEASE HELP: Gdy chcę zmienić nazwę na jakąkolwiek inną to "website didn't send any information" WTF? Chciałbym aby to się nazywało "translate-eng-spa"
-        public List<Word> GetEnglishToSpanishTranslation(string word)
+        [HttpGet("translate")] 
+        public List<DTOWord> GetEnglishToSpanishTranslation(string word)
         {
             if (CheckInput(word) == false)
             {
                 _logger.LogError(ExceptionHelper.METHOD_EMPTY_PARAMETER);
-                return new List<Word>();
-            } 
-            List<Word> words = new List<Word>();
-            words = _wordRepository.GetAllWords().ToList();
-            List<Word> result = words.Where(n => n.English == word)
-                                     .Select(n => new Word() { English = n.English, Spanish = n.Spanish, GrammaticalGenderId = n.GrammaticalGenderId, LexicalCategoryId = n.LexicalCategoryId })
-                                     .ToList();
-            return result;
+                return new List<DTOWord>();
+            }
+
+            return GetWords(word, true);
         }
 
         //localhost:7057/api/TranslateApi/translate-spa-eng?word=a
-        [HttpGet("translate-spa-eng")] //KLAUDIA PLEASE HELP: Nie działa ta nazwa w linku :(
-        public List<Word> GetSpanishToEnglishTranslation(string word)
+        [HttpGet("translate-spa-eng")] 
+        public List<DTOWord> GetSpanishToEnglishTranslation(string word)
         {
             if (CheckInput(word) == false)
             {
                 _logger.LogError(ExceptionHelper.METHOD_EMPTY_PARAMETER);
-                return new List<Word>();
+                return new List<DTOWord>();
             }
-            List<Word> words = new List<Word>();
-            words = _wordRepository.GetAllWords().ToList();
-            List<Word> result = words.Where(n => n.Spanish == word)
-                                     .Select(n => new Word() { English = n.English, Spanish = n.Spanish, GrammaticalGenderId = n.GrammaticalGenderId, LexicalCategoryId = n.LexicalCategoryId })
-                                     .ToList();
-            return result;
+
+            return GetWords(word, false);
         }
 
-        //KLAUDIA: Skopiuj poniższy JSON do zapytania do postman.com, w MSSQL Server Managment widać że program dodał słowo do DB
+        //Skopiuj poniższy JSON do zapytania do postman.com, w MSSQL Server Managment widać że program dodał słowo do DB
         //{"spanish":"apiTestWord","english":"a","lexicalCategoryId":1,"grammaticalGenderId":1}
         //localhost:7057/api/TranslateApi/addtranslation
         [HttpPost("addtranslation")]
-        public bool AddTranslation(APIWord apiWord)
+        public bool AddTranslation(DTOWord apiWord)
         {
             if (CheckInput(apiWord.English) != true || CheckInput(apiWord.Spanish) != true)
             {
@@ -68,7 +60,7 @@ namespace SpanishWords.Web.Controllers
                 return false;
             }
 
-            Word word = CreateWordFromAPIWord(apiWord);
+            Word word = CreateWordFromDTOWord(apiWord);
 
             if (_wordRepository.Add(word) == true)
             {
@@ -81,14 +73,14 @@ namespace SpanishWords.Web.Controllers
             }
         }
 
-        private Word CreateWordFromAPIWord(APIWord apiWord)
+        private Word CreateWordFromDTOWord(DTOWord word)
         {
             return new Word()
             {
-                Spanish = apiWord.Spanish,
-                English = apiWord.English,
-                LexicalCategoryId = apiWord.LexicalCategoryId,
-                GrammaticalGenderId = apiWord.GrammaticalGenderId,
+                Spanish = word.Spanish,
+                English = word.English,
+                LexicalCategoryId = word.LexicalCategoryId,
+                GrammaticalGenderId = word.GrammaticalGenderId,
                 UserId = ApiHelper.API_USER_ID,
                 StatisticId = _wordRepository.CreateAndAddStatistic(ApiHelper.API_TIMES_CORRECT_TO_LEARN).Id
             };
@@ -101,6 +93,30 @@ namespace SpanishWords.Web.Controllers
             input = input.ToLower();
             if (input.IsNullOrEmpty() == true) return false;
             return true;
+        }
+
+        private List<DTOWord> GetWords(string word, bool isEnglish)
+        {
+            List<Word> words = _wordRepository.GetAllWords().ToList();
+            List<DTOWord> result = words
+                .Where(n => isEnglish ? n.English == word : n.Spanish == word)
+                .Where(n => n.Statistic.DeleteTime == null)
+                .Select(n => new DTOWord()
+                {
+                    English = n.English,
+                    Spanish = n.Spanish,
+                    GrammaticalGenderId = n.GrammaticalGenderId,
+                    LexicalCategoryId = n.LexicalCategoryId,
+                    Statistic = new DTOStatistic()
+                    {
+                        CreateDate = n.Statistic.CreateDate,
+                        LastUpdated = n.Statistic.LastUpdated,
+                        DeleteTime = n.Statistic.DeleteTime,
+                        CorrectAnswersToLearn = n.Statistic.CorrectAnswersToLearn
+                    }
+                })
+                .ToList();
+            return result;
         }
 
     }
