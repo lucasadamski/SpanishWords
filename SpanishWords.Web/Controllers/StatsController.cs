@@ -4,6 +4,7 @@ using SpanishWords.Models;
 using SpanishWords.Web.Helpers;
 using SpanishWords.Web.Models;
 using System.Security.Claims;
+using System.Text;
 
 
 /*
@@ -32,9 +33,9 @@ namespace SpanishWords.Web.Controllers
             _userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             StatsViewModel stats = new StatsViewModel();
             SetTotalLearntWords(stats, _userId);
-            SetHardestWordToLearn(stats, _userId);
-            SetAverageTimeForLearningPerWord(stats, _userId);
-            SetAverageQuestionCountPerWord(stats, _userId);
+            stats.HardestWordToLearn = SetHardestWordToLearn(stats, _userId);
+            stats.AverageTimeForLearningPerWord = SetAverageTimeForLearningPerWord(stats, _userId);
+            stats.AverageQuestionCountPerWord = SetAverageQuestionCountPerWord(stats, _userId);
             return View(stats);
         }
         public void SetTotalLearntWords(StatsViewModel stats, string userId)
@@ -51,28 +52,39 @@ namespace SpanishWords.Web.Controllers
             stats.LearntWords = learntWords;
             stats.NotLearntWords = notLearntWords;
         }
-        public void SetHardestWordToLearn(StatsViewModel stats, string userId)
+        public Word SetHardestWordToLearn(StatsViewModel stats, string userId)
         {
             List<Word> learntWords = _wordRepository.GetAllLearntWords(userId, SettingsHelper.CORRECT_NUMBER_FOR_LEARNING).ToList();
-            Word result = learntWords.OrderBy(n => _wordRepository.GetWordsTimesIncorrect(n.Id)).First();
-            stats.HardestWordToLearn = result;
+            if(learntWords.Count() == 0)
+            {
+                return new Word()
+                {
+                    English = MessageHelper.NO_WORDS_LEARNT,
+                    Spanish = MessageHelper.NO_WORDS_LEARNT
+                };
+            }
+            return learntWords.OrderBy(n => _wordRepository.GetWordsTimesIncorrect(n.Id)).First();            
         }
-        public void SetAverageTimeForLearningPerWord(StatsViewModel stats, string userId)
-        {      
-            var groupsOfLearntStudyEntries = _wordRepository
+        public string SetAverageTimeForLearningPerWord(StatsViewModel stats, string userId)
+        {
+            IEnumerable<IGrouping<int, StudyEntry>> groupsOfLearntStudyEntries = _wordRepository
                 .GetAllStudyEntries(userId)
                 .Where(n => n.Correct == true)
                 .GroupBy(n => n.Statistic.Id)
                 .Where(n => n.Count() >= SettingsHelper.CORRECT_NUMBER_FOR_LEARNING);
 
-            if (groupsOfLearntStudyEntries.Count() == 0)
-            {
-                stats.AverageTimeForLearningPerWord = "No words learnt yet.";
-                return;
-            }
+            if (groupsOfLearntStudyEntries.Count() == 0)            
+                return MessageHelper.NO_WORDS_LEARNT;            
 
+            TimeSpan averageTime = GenerateAverageTime(groupsOfLearntStudyEntries, SettingsHelper.CORRECT_NUMBER_FOR_LEARNING);
+
+            return GenerateStringFromAverageTime(averageTime);
+        }
+        private TimeSpan GenerateAverageTime(IEnumerable<IGrouping<int, StudyEntry>> groupsOfLearntStudyEntries, int numberForLearing)
+        {
+            numberForLearing--;
             List<StudyEntry> dateWhenWordIsLearnt = groupsOfLearntStudyEntries
-                .Select(g => g.ElementAt(2))
+                .Select(g => g.ElementAt(numberForLearing))
                 .ToList();
 
             List<TimeSpan> timesForLearningWord = dateWhenWordIsLearnt
@@ -81,16 +93,24 @@ namespace SpanishWords.Web.Controllers
 
             double totalDays = timesForLearningWord.Sum(n => n.TotalDays);
             double averegeDaysForLearning = totalDays / timesForLearningWord.Count();
-            TimeSpan averageTime = TimeSpan.FromDays(averegeDaysForLearning);
-
-            stats.AverageTimeForLearningPerWord = $"{(int)averageTime.TotalDays} days and {averageTime.Hours} hours.";
+            return TimeSpan.FromDays(averegeDaysForLearning);
         }
-        private void SetAverageQuestionCountPerWord(StatsViewModel stats, string userId)
+        private string GenerateStringFromAverageTime(TimeSpan averageTime)
+        {
+            if ((int)averageTime.TotalDays != 0) return $"{(int)averageTime.TotalDays} days";
+            else if (averageTime.Hours != 0) return $"{averageTime.Hours} hours";
+            else return $"{averageTime.Minutes} minutes";
+        }
+        private double SetAverageQuestionCountPerWord(StatsViewModel stats, string userId)
         {
             int questionsCount = _wordRepository.GetAllStudyEntries(userId).Count();
+            if (questionsCount == 0) 
+                return 0D;
             int wordsCount = _wordRepository.GetAllWords(userId).Count();
+            if (wordsCount == 0)
+                return 0D;
 
-            stats.AverageQuestionCountPerWord = questionsCount / wordsCount;
+            return questionsCount / wordsCount;                
         }
     }
 }
