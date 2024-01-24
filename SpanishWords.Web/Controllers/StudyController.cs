@@ -58,6 +58,7 @@ namespace SpanishWords.Web.Controllers
 
         [HttpPost]
         public IActionResult Index(StudyViewModel study)
+        
         {
             if (IsValid(study) == false) return View("~/Views/Shared/MyError.cshtml");
             if (LoadWordsToAnswer(study) == false) return View("NoWordsToStudy");
@@ -83,12 +84,13 @@ namespace SpanishWords.Web.Controllers
 
         private bool IsValid(StudyViewModel study)
         {
-            study.Answer = study.Answer.Trim();
-            if (study == null || study.Answer == null || study.Answer == "")
+            if (study == null)
             {
                 _logger.LogInformation(ExceptionHelper.EMPTY_VARIABLE);
                 return false;
             }
+            if (study.Answer == null) study.Answer = "";
+            study.Answer = study.Answer.Trim();
             return true;
         }
 
@@ -102,7 +104,7 @@ namespace SpanishWords.Web.Controllers
                 return;
             }
             //Generate random number until it's the one that has not been already answered
-            while (true)
+            while (study.WordsToAnswer.Count() > 1)
             {
                 _randomNumber = RandomNumberGenerator.GetInt32(study.WordsToAnswer.Count());
                 if (study.IndexesOfWordsAnswered.Contains(_randomNumber) == true) continue;

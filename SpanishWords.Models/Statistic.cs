@@ -24,8 +24,5 @@ namespace SpanishWords.Models
         * *********************/
         public Word Word { get; set; }
         public ICollection<StudyEntry> StudyEntry { get; set; }
-
-
-
     }
 }
