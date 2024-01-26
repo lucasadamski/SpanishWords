@@ -1,5 +1,6 @@
 ﻿using EFDataAccess.Repositories.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
+using SpanishWords.EntityFramework.Helpers;
 using SpanishWords.Models;
 using SpanishWords.Web.Helpers;
 using SpanishWords.Web.Models;
@@ -22,11 +23,13 @@ namespace SpanishWords.Web.Controllers
     public class StatsController : Controller
     {
         private IWordRepository _wordRepository;
+        private readonly ILogger<StudyController> _logger;
         private string _userId;
 
-        public StatsController(IWordRepository wordRepository)
+        public StatsController(IWordRepository wordRepository, ILogger<StudyController> logger)
         {
             _wordRepository = wordRepository;
+            _logger = logger;
         }
         public IActionResult Index()
         {
@@ -40,6 +43,15 @@ namespace SpanishWords.Web.Controllers
         }
         public void SetTotalLearntWords(StatsViewModel stats, string userId)
         {
+            if (userId == null || stats == null)
+            {
+                _logger.LogError(DBExceptionHelper.EMPTY_VARIABLE);
+                stats.TotalWords = 0;
+                stats.LearntWords = 0;
+                stats.NotLearntWords = 0;
+                return;
+            }
+
             int notLearntWords;
             int learntWords;
             int totalWords;
@@ -54,6 +66,11 @@ namespace SpanishWords.Web.Controllers
         }
         public Word SetHardestWordToLearn(StatsViewModel stats, string userId)
         {
+            if (userId == null || stats == null)
+            {
+                _logger.LogError(DBExceptionHelper.EMPTY_VARIABLE);
+                return new Word();
+            }
             List<Word> learntWords = _wordRepository.GetAllLearntWords(userId, SettingsHelper.CORRECT_NUMBER_FOR_LEARNING).ToList();
             if(learntWords.Count() == 0)
             {

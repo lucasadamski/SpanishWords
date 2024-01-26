@@ -170,13 +170,7 @@ namespace EFDataAccess.Repositories
         }
 
         public IEnumerable<Word> GetAllNotLearntWords(string userId, int timesCorrect)
-        {
-            if (userId == null)
-            {
-                _logger.LogError(DBExceptionHelper.EMPTY_VARIABLE);
-                return new List<Word>();
-            }
-
+        {    
             IEnumerable<Word> result;
 
             try
@@ -212,13 +206,7 @@ namespace EFDataAccess.Repositories
         }
 
         public IEnumerable<Word> GetAllLearntWords(string userId, int timesCorrect)
-        {
-            if (userId == null)
-            {
-                _logger.LogError(DBExceptionHelper.EMPTY_VARIABLE);
-                return new List<Word>();
-            }
-
+        {           
             IEnumerable<Word> result;
 
             try
