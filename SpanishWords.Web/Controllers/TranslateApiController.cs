@@ -97,27 +97,13 @@ namespace SpanishWords.Web.Controllers
 
         private List<DTOWord> GetWords(string word, bool isEnglish)
         {
-            List<Word> words = _wordRepository.GetAllWords().ToList();
-            List<DTOWord> result = words
-                .Where(n => isEnglish ? n.English == word : n.Spanish == word)
-                .Where(n => n.Statistic.DeleteTime == null)
-                .Select(n => new DTOWord()
-                {
-                    English = n.English,
-                    Spanish = n.Spanish,
-                    GrammaticalGenderId = n.GrammaticalGenderId,
-                    LexicalCategoryId = n.LexicalCategoryId,
-                    Statistic = new DTOStatistic()
-                    {
-                        CreateDate = n.Statistic.CreateDate,
-                        LastUpdated = n.Statistic.LastUpdated,
-                        DeleteTime = n.Statistic.DeleteTime,
-                        CorrectAnswersToLearn = n.Statistic.CorrectAnswersToLearn
-                    }
-                })
-                .ToList();
+            if (word == null || isEnglish == null)
+            {
+                _logger.LogError(ExceptionHelper.METHOD_EMPTY_PARAMETER);
+                return new List<DTOWord>();
+            }
+            List<DTOWord> result = _wordRepository.GetDTOWordsByWordText(word, isEnglish);
             return result;
         }
-
     }
 }

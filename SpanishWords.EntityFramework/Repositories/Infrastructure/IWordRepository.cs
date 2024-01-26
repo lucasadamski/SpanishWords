@@ -30,5 +30,6 @@ namespace EFDataAccess.Repositories.Infrastructure
         public int GetWordsTotalTrainedTimes(int id);
         public List<StudyEntry> GetAllStudyEntries(string userId);
         public List<StudyEntry> GetStudyEntries(int wordId);
+        public List<DTOWord> GetDTOWordsByWordText(string word, bool isEnglish);
     }
 }

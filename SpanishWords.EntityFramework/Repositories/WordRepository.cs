@@ -358,5 +358,36 @@ namespace EFDataAccess.Repositories
                 return new List<StudyEntry>();
             }
         }
+        public List<DTOWord> GetDTOWordsByWordText(string word, bool isEnglish)
+        {
+            List<DTOWord> result;
+            try
+            {
+                result = _db.Words
+                    .Where(n => isEnglish ? n.English == word : n.Spanish == word)
+                    .Where(n => n.Statistic.DeleteTime == null)
+                    .Select(n => new DTOWord()
+                    {
+                        English = n.English,
+                        Spanish = n.Spanish,
+                        GrammaticalGenderId = n.GrammaticalGenderId,
+                        LexicalCategoryId = n.LexicalCategoryId,
+                        Statistic = new DTOStatistic()
+                        {
+                            CreateDate = n.Statistic.CreateDate,
+                            LastUpdated = n.Statistic.LastUpdated,
+                            DeleteTime = n.Statistic.DeleteTime,
+                            CorrectAnswersToLearn = n.Statistic.CorrectAnswersToLearn
+                        }
+                    }).ToList();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(DBExceptionHelper.EF_QUERY_ERROR + DBExceptionHelper.GetErrorMessage(e.Message));
+                return new List<DTOWord>();
+            }
+            return result;
+        }
+
     }
 }
