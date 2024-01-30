@@ -24,12 +24,12 @@ namespace SpanishWords.Web.Controllers
 
         //localhost:7057/api/TranslateApi/translate?word=a
         [HttpGet("translate")] 
-        public List<DTOWord> GetEnglishToSpanishTranslation(string word)
+        public List<WordDTO> GetEnglishToSpanishTranslation(string word)
         {
             if (CheckInput(word) == false)
             {
                 _logger.LogError(ExceptionHelper.METHOD_EMPTY_PARAMETER);
-                return new List<DTOWord>();
+                return new List<WordDTO>();
             }
 
             return GetWords(word, true);
@@ -37,12 +37,12 @@ namespace SpanishWords.Web.Controllers
 
         //localhost:7057/api/TranslateApi/translate-spa-eng?word=a
         [HttpGet("translate-spa-eng")] 
-        public List<DTOWord> GetSpanishToEnglishTranslation(string word)
+        public List<WordDTO> GetSpanishToEnglishTranslation(string word)
         {
             if (CheckInput(word) == false)
             {
                 _logger.LogError(ExceptionHelper.METHOD_EMPTY_PARAMETER);
-                return new List<DTOWord>();
+                return new List<WordDTO>();
             }
 
             return GetWords(word, false);
@@ -52,7 +52,7 @@ namespace SpanishWords.Web.Controllers
         //{"spanish":"apiTestWord","english":"a","lexicalCategoryId":1,"grammaticalGenderId":1}
         //localhost:7057/api/TranslateApi/addtranslation
         [HttpPost("addtranslation")]
-        public bool AddTranslation(DTOWord apiWord)
+        public bool AddTranslation(WordDTO apiWord)
         {
             if (CheckInput(apiWord.English) != true || CheckInput(apiWord.Spanish) != true)
             {
@@ -60,7 +60,7 @@ namespace SpanishWords.Web.Controllers
                 return false;
             }
 
-            Word word = CreateWordFromDTOWord(apiWord);
+            Word word = CreateWordFromWordDTO(apiWord);
 
             if (_wordRepository.Add(word) == true)
             {
@@ -73,7 +73,7 @@ namespace SpanishWords.Web.Controllers
             }
         }
 
-        private Word CreateWordFromDTOWord(DTOWord word)
+        private Word CreateWordFromWordDTO(WordDTO word)
         {
             return new Word()
             {
@@ -95,14 +95,14 @@ namespace SpanishWords.Web.Controllers
             return true;
         }
 
-        private List<DTOWord> GetWords(string word, bool isEnglish)
+        private List<WordDTO> GetWords(string word, bool isEnglish)
         {
             if (word == null || isEnglish == null)
             {
                 _logger.LogError(ExceptionHelper.METHOD_EMPTY_PARAMETER);
-                return new List<DTOWord>();
+                return new List<WordDTO>();
             }
-            List<DTOWord> result = _wordRepository.GetDTOWordsByWordText(word, isEnglish);
+            List<WordDTO> result = _wordRepository.GetWordDTOsByWordText(word, isEnglish);
             return result;
         }
     }

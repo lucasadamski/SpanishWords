@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SpanishWords.Models
 {
-    public class DTOStatistic
+    public class StatisticDTO
     {
         public DateTime CreateDate { get; set; }  
         public DateTime LastUpdated { get; set; }

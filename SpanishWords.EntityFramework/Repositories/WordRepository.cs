@@ -358,21 +358,21 @@ namespace EFDataAccess.Repositories
                 return new List<StudyEntry>();
             }
         }
-        public List<DTOWord> GetDTOWordsByWordText(string word, bool isEnglish)
+        public List<WordDTO> GetWordDTOsByWordText(string word, bool isEnglish)
         {
-            List<DTOWord> result;
+            List<WordDTO> result;
             try
             {
                 result = _db.Words
                     .Where(n => isEnglish ? n.English == word : n.Spanish == word)
                     .Where(n => n.Statistic.DeleteTime == null)
-                    .Select(n => new DTOWord()
+                    .Select(n => new WordDTO()
                     {
                         English = n.English,
                         Spanish = n.Spanish,
                         GrammaticalGenderId = n.GrammaticalGenderId,
                         LexicalCategoryId = n.LexicalCategoryId,
-                        Statistic = new DTOStatistic()
+                        Statistic = new StatisticDTO()
                         {
                             CreateDate = n.Statistic.CreateDate,
                             LastUpdated = n.Statistic.LastUpdated,
@@ -384,7 +384,7 @@ namespace EFDataAccess.Repositories
             catch (Exception e)
             {
                 _logger.LogError(DBExceptionHelper.EF_QUERY_ERROR + DBExceptionHelper.GetErrorMessage(e.Message));
-                return new List<DTOWord>();
+                return new List<WordDTO>();
             }
             return result;
         }

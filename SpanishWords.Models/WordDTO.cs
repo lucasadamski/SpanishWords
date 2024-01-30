@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace SpanishWords.Models
 {
-    public class DTOWord
+    public class WordDTO
     {
         public string Spanish { get; set; }
         public string English { get; set; }
         public int LexicalCategoryId { get; set; }
         public int? GrammaticalGenderId { get; set; }
-        public DTOStatistic? Statistic { get; set; }
+        public StatisticDTO? Statistic { get; set; }
     }
 }
