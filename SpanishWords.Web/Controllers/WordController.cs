@@ -9,27 +9,29 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using SpanishWords.EntityFramework.Repositories.Infrastructure;
 using SpanishWords.EntityFramework.Repositories;
+using SpanishWords.Web.Helpers;
 
 namespace SpanishWords.Web.Controllers
 {
     [Authorize]
     public class WordController : Controller
     {
-        
+
         private IWordRepository _wordRepository;
         private IStatsRepository _statsRepository;
         private const int CORRECT_ANSWERS_TO_LEARN = 3;
+        private readonly ILogger<WordController> _logger;
 
-        public WordController(IWordRepository wordRepository, IStatsRepository statsRepository)
+        public WordController(IWordRepository wordRepository, IStatsRepository statsRepository, ILogger<WordController> logger)
         {
             _wordRepository = wordRepository;
             _statsRepository = statsRepository;
+            _logger = logger;
         }
 
         public IActionResult Index()
         {
-           WordViewModel wordViewModel = new WordViewModel();
-
+            WordViewModel wordViewModel = new WordViewModel();
 
             wordViewModel.Words = _wordRepository.GetAllWords(User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList(); //string z userId
 
@@ -37,15 +39,13 @@ namespace SpanishWords.Web.Controllers
             {
                 wordViewModel.TimesCorrect.Add(_wordRepository.GetWordsTimesCorrect(wordViewModel.Words.ElementAt(i).Id));
                 wordViewModel.TimesIncorrect.Add(_wordRepository.GetWordsTimesIncorrect(wordViewModel.Words.ElementAt(i).Id));
-                wordViewModel.TimesTrained.Add(wordViewModel.TimesCorrect.Last() + wordViewModel.TimesIncorrect.Last() );
+                wordViewModel.TimesTrained.Add(wordViewModel.TimesCorrect.Last() + wordViewModel.TimesIncorrect.Last());
             }
 
             wordViewModel.TimesCorrectForLearning = 3;
 
             return View(wordViewModel);
-            
         }
-
         public IActionResult Add()
         {
             WordViewModel model = new();
@@ -61,25 +61,36 @@ namespace SpanishWords.Web.Controllers
                 Text = a.Name,
                 Value = a.Id.ToString()
             });
+
             return View(model);
         }
-
         [HttpPost]
         public IActionResult Add(WordViewModel wordViewModel)
         {
-            
-            if (wordViewModel.Word.Spanish == null || wordViewModel.Word.Spanish.Trim() == "") wordViewModel.Word.Spanish = "<Empty>";
-            if (wordViewModel.Word.English == null || wordViewModel.Word.English.Trim() == "") wordViewModel.Word.English = "<Empty>";
+            if (wordViewModel.Word.Spanish == null || wordViewModel.Word.Spanish.Trim() == "" 
+                || wordViewModel.Word.English == null || wordViewModel.Word.English.Trim() == "" 
+                || wordViewModel.Word.GrammaticalGenderId == null || wordViewModel.Word.LexicalCategoryId == null
+                || wordViewModel.Word.GrammaticalGenderId == 0 || wordViewModel.Word.LexicalCategoryId == 0)
+            {
+                _logger.LogError(ExceptionHelper.EMPTY_VARIABLE);
+                return View("WordError");
+            }
+ 
             wordViewModel.Word.Spanish = wordViewModel.Word.Spanish.Trim();
             wordViewModel.Word.English = wordViewModel.Word.English.Trim();
 
-            wordViewModel.Word.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);  //przypisanie id z Identity
+            wordViewModel.Word.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             wordViewModel.Word.StatisticId = _wordRepository.CreateAndAddStatistic(CORRECT_ANSWERS_TO_LEARN).Id;
-            _wordRepository.Add(wordViewModel.Word);
+            if (wordViewModel.Word.StatisticId == -1) return View("WordError");
+
+            if (_wordRepository.Add(wordViewModel.Word) == false)
+            {
+                _logger.LogError(ExceptionHelper.DATABASE_CONNECTION_ERROR);
+                return View("WordError");
+            }
 
             return RedirectToAction("Add");
         }
-
         public IActionResult Edit(int id)
         {
             WordViewModel word = new WordViewModel();
@@ -98,40 +109,43 @@ namespace SpanishWords.Web.Controllers
 
             return View("Add", word);
         }
-
         [HttpPost]
         public IActionResult Edit(WordViewModel model)
         {
-
             model.Word.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            _wordRepository.Edit(model.Word);
+           
+            if (_wordRepository.Edit(model.Word) == false)
+            {
+                _logger.LogError(ExceptionHelper.DATABASE_CONNECTION_ERROR);
+                return View("WordError");
+            }
 
             return RedirectToAction("Index", "Word");
         }
-
         public IActionResult Delete(int id)
         {
-            Word? word = _wordRepository.GetWordById(id);
-            if (word == null)
-            {
-                /*TODO dać okno z ostrzeżeniem że nie można usunąć danego wyrazu (JavaScript?)*/
-                return RedirectToAction("Index", "Word");
-            }
-             
-            _wordRepository.Delete(word);
-            return RedirectToAction("Index", "Word");
-        }
+            Word? word = _wordRepository.GetWordById(id);           
 
-        
+            if (word == null || _wordRepository.Delete(word) == false)
+            {
+                _logger.LogError(ExceptionHelper.DATABASE_CONNECTION_ERROR);
+                return View("WordError");
+            }
+           
+            return RedirectToAction("Index", "Word");
+        }        
         public IActionResult RestartProgressForAllWords()
         {
-            _wordRepository.RestartProgressForAll(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (_wordRepository.RestartProgressForAll(User.FindFirstValue(ClaimTypes.NameIdentifier)) == false)
+            {
+                _logger.LogError(ExceptionHelper.DATABASE_CONNECTION_ERROR);
+                return View("WordError");
+            }
+            
             WordViewModel wordViewModel = new WordViewModel();
             LoadAllWordsFromRepository(wordViewModel);
             return View("Index", wordViewModel);
         }
-
         public IActionResult RestartProgressForOneWord(int id)
         {
             _wordRepository.RestartProgress(id);
@@ -140,10 +154,10 @@ namespace SpanishWords.Web.Controllers
             //return View("Index", wordViewModel);
             return RedirectToAction("Index", "Word");
         }
-
         private void LoadAllWordsFromRepository(WordViewModel wordViewModel)
         {
-            wordViewModel.Words = _wordRepository.GetAllWords(User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList(); //string z userId
+            //how to check if operation was successful???
+            wordViewModel.Words = _wordRepository.GetAllWords(User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList(); 
             for (int i = 0; i < wordViewModel.Words.Count(); i++)
             {
                 int id = wordViewModel.Words.ElementAt(i).Id;
@@ -154,5 +168,4 @@ namespace SpanishWords.Web.Controllers
             wordViewModel.TimesCorrectForLearning = CORRECT_ANSWERS_TO_LEARN;
         }
     }
-       
 }

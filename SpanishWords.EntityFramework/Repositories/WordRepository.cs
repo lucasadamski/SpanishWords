@@ -24,9 +24,23 @@ namespace EFDataAccess.Repositories
         {
             DateTime dateTimeNow = new DateTime();
             dateTimeNow = DateTime.Now;
-            Statistic statistic = new Statistic() { CreateDate = dateTimeNow, LastUpdated = dateTimeNow, CorrectAnswersToLearn = numberOfAnswersToLearnTheWord };
-            _db.Statistics.Add(statistic);
-            _db.SaveChanges();
+            Statistic statistic = new Statistic()
+            {
+                CreateDate = dateTimeNow,
+                LastUpdated = dateTimeNow,
+                CorrectAnswersToLearn = numberOfAnswersToLearnTheWord
+            };
+
+            try
+            {
+                _db.Statistics.Add(statistic);
+                _db.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(DBExceptionHelper.DATABASE_WRITE_ERROR);
+                statistic = new Statistic() { Id = -1 };
+            }
             return statistic;
         }
         public IEnumerable<Word> GetAllWords(string userId)
@@ -76,20 +90,44 @@ namespace EFDataAccess.Repositories
         }
         public bool Add(Word? word)
         {
-            _db.Words.Add(word);
-            _db.SaveChanges();
+            try
+            {
+                _db.Words.Add(word);
+                _db.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(DBExceptionHelper.DATABASE_WRITE_ERROR);
+                return false;
+            }
             return true;
         }
         public bool Edit(Word? word)
         {
-            _db.Words.Update(word);
-            _db.SaveChanges();
+            try
+            {
+                _db.Words.Update(word);
+                _db.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(DBExceptionHelper.DATABASE_WRITE_ERROR);
+                return false;
+            }
             return true;
         }
         public bool Delete(Word? word)
         {
-            _db.Words.Remove(word);
-            _db.SaveChanges();
+            try
+            {
+                _db.Words.Remove(word);
+                _db.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(DBExceptionHelper.DATABASE_WRITE_ERROR);
+                return false;
+            }
             return true;
         }
         public Word? GetWordById(int id) => _db.Words.Where(a => a.Id == id).FirstOrDefault();            
@@ -138,14 +176,14 @@ namespace EFDataAccess.Repositories
                 {
                     _db.Remove(entry);
                 }
-                _db.SaveChanges();
-                return true;
+                _db.SaveChanges();                
             }
             catch(Exception e)
             {
                 _logger.LogError(DBExceptionHelper.EF_QUERY_ERROR + DBExceptionHelper.GetErrorMessage(e.Message));
                 return false;
             }
+            return true;
         }
         public bool RestartProgress(int id)
         {
@@ -156,14 +194,14 @@ namespace EFDataAccess.Repositories
                 {
                     _db.Remove(entry);
                 }
-                _db.SaveChanges();
-                return true;
+                _db.SaveChanges();               
             }
             catch (Exception e)
             {
                 _logger.LogError(DBExceptionHelper.EF_QUERY_ERROR + DBExceptionHelper.GetErrorMessage(e.Message));
                 return false;
             }
+            return true;
         }
         public int GetWordsTimesCorrect(int id)
         {

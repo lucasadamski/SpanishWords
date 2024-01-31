@@ -26,10 +26,10 @@ namespace SpanishWords.Web.Controllers
     {
         private IWordRepository _wordRepository;
         private IStatsRepository _statsRepository;
-        private readonly ILogger<StudyController> _logger;
+        private readonly ILogger<StatsController> _logger;
         private string _userId;
 
-        public StatsController(IWordRepository wordRepository, IStatsRepository statsRepository, ILogger<StudyController> logger)
+        public StatsController(IWordRepository wordRepository, IStatsRepository statsRepository, ILogger<StatsController> logger)
         {
             _wordRepository = wordRepository;
             _statsRepository = statsRepository;
