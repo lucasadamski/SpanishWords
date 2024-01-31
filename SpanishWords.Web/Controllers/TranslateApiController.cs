@@ -75,6 +75,13 @@ namespace SpanishWords.Web.Controllers
 
         private Word CreateWordFromWordDTO(WordDTO word)
         {
+            int statisticId = _wordRepository.CreateAndAddStatistic(ApiHelper.API_TIMES_CORRECT_TO_LEARN).Id;
+            if (statisticId == -1)
+            {
+                _logger.LogError(ExceptionHelper.DATABASE_CONNECTION_ERROR);
+                return new Word();
+            }
+
             return new Word()
             {
                 Spanish = word.Spanish,
