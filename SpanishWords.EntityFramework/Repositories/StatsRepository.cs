@@ -5,11 +5,6 @@ using Microsoft.Extensions.Logging;
 using SpanishWords.EntityFramework.Helpers;
 using SpanishWords.EntityFramework.Repositories.Infrastructure;
 using SpanishWords.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SpanishWords.EntityFramework.Repositories
 {
@@ -62,7 +57,6 @@ namespace SpanishWords.EntityFramework.Repositories
         public IEnumerable<Word> GetAllLearntWords(string userId, int timesCorrect)
         {
             IEnumerable<Word> result;
-
             try
             {
                 //Creates list of IDs only that are learnt
@@ -108,9 +102,17 @@ namespace SpanishWords.EntityFramework.Repositories
                 HelperType = _db.HelperTypes.Where(n => n.Id == 1).First()  //not implemented
             };
 
-            _db.Add(studyEntry);
-            _db.Update(wordStat);
-            _db.SaveChanges();
+            try
+            {
+                _db.Add(studyEntry);
+                _db.Update(wordStat);
+                _db.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(DBExceptionHelper.DATABASE_WRITE_ERROR);
+                return false;
+            }
             return true;
         }
         public int GetWordsTotalTrainedTimes(int id)
@@ -164,6 +166,5 @@ namespace SpanishWords.EntityFramework.Repositories
 
             return result;
         }
-
     }
 }

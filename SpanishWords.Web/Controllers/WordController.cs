@@ -148,10 +148,14 @@ namespace SpanishWords.Web.Controllers
         }
         public IActionResult RestartProgressForOneWord(int id)
         {
-            _wordRepository.RestartProgress(id);
+            if (_wordRepository.RestartProgress(id) == false)
+            {
+                _logger.LogError(ExceptionHelper.DATABASE_CONNECTION_ERROR);
+                return View("WordError");
+            }
+            
             WordViewModel wordViewModel = new WordViewModel();
-            LoadAllWordsFromRepository(wordViewModel);
-            //return View("Index", wordViewModel);
+            LoadAllWordsFromRepository(wordViewModel);            
             return RedirectToAction("Index", "Word");
         }
         private void LoadAllWordsFromRepository(WordViewModel wordViewModel)
