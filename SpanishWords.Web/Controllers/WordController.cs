@@ -7,6 +7,8 @@ using EFDataAccess.Repositories.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using SpanishWords.EntityFramework.Repositories.Infrastructure;
+using SpanishWords.EntityFramework.Repositories;
 
 namespace SpanishWords.Web.Controllers
 {
@@ -15,11 +17,13 @@ namespace SpanishWords.Web.Controllers
     {
         
         private IWordRepository _wordRepository;
+        private IStatsRepository _statsRepository;
         private const int CORRECT_ANSWERS_TO_LEARN = 3;
 
-        public WordController(IWordRepository wordRepository)
+        public WordController(IWordRepository wordRepository, IStatsRepository statsRepository)
         {
             _wordRepository = wordRepository;
+            _statsRepository = statsRepository;
         }
 
         public IActionResult Index()
@@ -145,7 +149,7 @@ namespace SpanishWords.Web.Controllers
                 int id = wordViewModel.Words.ElementAt(i).Id;
                 wordViewModel.TimesCorrect.Add(_wordRepository.GetWordsTimesCorrect(id));
                 wordViewModel.TimesIncorrect.Add(_wordRepository.GetWordsTimesIncorrect(id));
-                wordViewModel.TimesTrained.Add(_wordRepository.GetWordsTotalTrainedTimes(id));
+                wordViewModel.TimesTrained.Add(_statsRepository.GetWordsTotalTrainedTimes(id));
             }
             wordViewModel.TimesCorrectForLearning = CORRECT_ANSWERS_TO_LEARN;
         }

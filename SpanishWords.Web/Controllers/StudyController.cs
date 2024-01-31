@@ -1,40 +1,24 @@
-﻿using EFDataAccess.Repositories;
-using EFDataAccess.Repositories.Infrastructure;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.FlowAnalysis.DataFlow;
-using SpanishWords.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using SpanishWords.Web.Models;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using Microsoft.Extensions.Logging;
 using SpanishWords.Web.Helpers;
-
-
-/*
-Powyżej formularza wyświetla się słówko, które użytkownik ma przetłumaczyć 
-
-Formularz zawiera 1 pole, które wypełniane jest przez użytkownika 
-
-Formularz po uruchomieniu ma autofocus na pole formularza 
-
-Jeśli użytkownik odpowie prawidłowo, powinien dostać nowe, losowe pytanie z listy słów, które utworzył, aformularz powinien sie wyczyścić 
-
-Jeśli użytkownik odpowie nieprawidłowo, powinien do skutku otrzymywać to samo słowo do wyświetlenia 
-*/
+using SpanishWords.EntityFramework.Repositories.Infrastructure;
 
 
 namespace SpanishWords.Web.Controllers
 {
     public class StudyController : Controller
     {
-        private IWordRepository _wordRepository;
+        private IStatsRepository _statsRepository;
         private int _randomNumber;
         private readonly ILogger<StudyController> _logger;
         private IActionResult _view;
 
-        public StudyController(IWordRepository wordRepository, ILogger<StudyController> logger)
+        public StudyController(IStatsRepository statsRepository, ILogger<StudyController> logger)
         {
-            _wordRepository = wordRepository;
+            _statsRepository = statsRepository;
             _logger = logger;
         }
         public IActionResult Index()
@@ -55,10 +39,8 @@ namespace SpanishWords.Web.Controllers
             study.IsFirstQuestion = true;
             return View(study);
         }
-
         [HttpPost]
         public IActionResult Index(StudyViewModel study)
-        
         {
             if (IsValid(study) == false) return View("~/Views/Shared/MyError.cshtml");
             if (LoadWordsToAnswer(study) == false) return View("NoWordsToStudy");
@@ -74,14 +56,12 @@ namespace SpanishWords.Web.Controllers
             }
             return _view;
         }
-
         private bool LoadWordsToAnswer(StudyViewModel study)
         {
-            study.WordsToAnswer = _wordRepository.GetAllNotLearntWords(User.FindFirstValue(ClaimTypes.NameIdentifier), 3).ToList();
+            study.WordsToAnswer = _statsRepository.GetAllNotLearntWords(User.FindFirstValue(ClaimTypes.NameIdentifier), 3).ToList();
             if (study.WordsToAnswer == null || study.WordsToAnswer.Count() == 0) return false;
             return true;
         }
-
         private bool IsValid(StudyViewModel study)
         {
             if (study == null)
@@ -93,8 +73,6 @@ namespace SpanishWords.Web.Controllers
             study.Answer = study.Answer.Trim();
             return true;
         }
-
-    
         private void GenerateNextRandomWord(StudyViewModel study)
         {
             //If every words in collection has been answered then terminate the study session
@@ -116,12 +94,11 @@ namespace SpanishWords.Web.Controllers
             _view = View(study);
             return;
         }
-
         private void UpdateStats(StudyViewModel study, bool isCorrect)
         {
             if (isCorrect == true) study.WasLastAnswerCorrect = true;
             else study.WasLastAnswerCorrect = false;
-            if (_wordRepository.SaveStats(study.RandomWord, isCorrect) == false)
+            if (_statsRepository.SaveStats(study.RandomWord, isCorrect) == false)
             {
                 _logger.LogInformation(ExceptionHelper.DATABASE_CONNECTION_ERROR);
                 _view = View("~/Views/Shared/MyError.cshtml");
@@ -132,5 +109,4 @@ namespace SpanishWords.Web.Controllers
             }
         }
     }
-
 }
