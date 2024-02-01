@@ -1,9 +1,7 @@
 ﻿using EFDataAccess.Repositories;
 using EFDataAccess.Repositories.Infrastructure;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using SpanishWords.EntityFramework.Helpers;
 using SpanishWords.Models;
 using SpanishWords.Web.Helpers;
 
@@ -24,52 +22,64 @@ namespace SpanishWords.Web.Controllers
 
         //localhost:7057/api/TranslateApi/translate?word=a
         [HttpGet("translate")] 
-        public List<WordDTO> GetEnglishToSpanishTranslation(string word)
+        public APIWordsDTO GetEnglishToSpanishTranslation(string word)
         {
-            if (CheckInput(word) == false)
+            APIWordsDTO response = new APIWordsDTO();
+            if (CheckStringInput(word) == false)
             {
                 _logger.LogError(ExceptionHelper.METHOD_EMPTY_PARAMETER);
-                return new List<WordDTO>();
+                response.APIResponse.SetAllFields(ApiHelper.API_INPUT_PROCESS_ERROR, success: false, error: true);
+                response.Words = new List<WordDTO>();
+                return response;
             }
+            response.Words = GetWords(word, true);
+            SetSuccessfulResponse(response);
 
-            return GetWords(word, true);
+            return response;
         }
 
         //localhost:7057/api/TranslateApi/translate-spa-eng?word=a
         [HttpGet("translate-spa-eng")] 
-        public List<WordDTO> GetSpanishToEnglishTranslation(string word)
+        public APIWordsDTO GetSpanishToEnglishTranslation(string word)
         {
-            if (CheckInput(word) == false)
+            APIWordsDTO response = new APIWordsDTO();
+            if (CheckStringInput(word) == false)
             {
                 _logger.LogError(ExceptionHelper.METHOD_EMPTY_PARAMETER);
-                return new List<WordDTO>();
+                response.APIResponse.SetAllFields(ApiHelper.API_INPUT_PROCESS_ERROR, success: false, error: true);
+                response.Words = new List<WordDTO>();
+                return response;
             }
+            response.Words = GetWords(word, false);
+            SetSuccessfulResponse(response);
 
-            return GetWords(word, false);
+            return response;
         }
 
         //Skopiuj poniższy JSON do zapytania do postman.com, w MSSQL Server Managment widać że program dodał słowo do DB
         //{"spanish":"apiTestWord","english":"a","lexicalCategoryId":1,"grammaticalGenderId":1}
         //localhost:7057/api/TranslateApi/addtranslation
         [HttpPost("addtranslation")]
-        public bool AddTranslation(WordDTO apiWord)
+        public APIResponseInfo AddTranslation(WordDTO apiWord)
         {
-            if (CheckInput(apiWord.English) != true || CheckInput(apiWord.Spanish) != true)
+            APIResponseInfo response = new APIResponseInfo();
+            if (ValidateInputAndSetResponse(apiWord, response) != true)
             {
                 _logger.LogError(ExceptionHelper.API_ADD_TRANSLATION_ERROR);
-                return false;
+                return response;
             }
-
+            TrimAndLowerWords(apiWord);
             Word word = CreateWordFromWordDTO(apiWord);
-
             if (_wordRepository.Add(word) == true)
             {
-                return true;
+                response.SetAllFields(ApiHelper.InputSuccessful(word.English, word.Spanish));
+                return response;
             }
             else
             {
                 _logger.LogError(ExceptionHelper.API_ADD_TRANSLATION_ERROR);
-                return false;
+                response.SetAllFields(ApiHelper.API_INPUT_PROCESS_ERROR, success: false, error: true);
+                return response;
             }
         }
 
@@ -93,7 +103,7 @@ namespace SpanishWords.Web.Controllers
             };
         }
 
-        private bool CheckInput(string input)
+        private bool CheckStringInput(string input)
         {
             if (input.IsNullOrEmpty() == true) return false;
             input = input.Trim();
@@ -111,6 +121,56 @@ namespace SpanishWords.Web.Controllers
             }
             List<WordDTO> result = _wordRepository.GetWordDTOsByWordText(word, isEnglish);
             return result;
+        }
+
+        private void SetSuccessfulResponse(APIWordsDTO response)
+        {
+            int wordsCount = response.Words.Count();
+            if (wordsCount == 0)
+                response.APIResponse.SetAllFields(ApiHelper.API_RESPONSE_EMPTY);
+            else
+                response.APIResponse.SetAllFields(ApiHelper.ResponseSuccessful(response.Words.Count()));
+        }      
+        
+        private bool ValidateInputAndSetResponse(WordDTO word, APIResponseInfo response)
+        {
+            bool isProblem = false;
+            response.Data = "";
+            if (CheckStringInput(word.English) != true)
+            {
+                response.Data += ApiHelper.API_INPUT_EN_ERROR;
+                isProblem = true;
+            }
+            if (CheckStringInput(word.Spanish) != true)
+            {
+                response.Data += ApiHelper.API_INPUT_ES_ERROR;
+                isProblem = true;
+            }
+            if (word.LexicalCategoryId == null || word.LexicalCategoryId < 1 || word.LexicalCategoryId > SettingsHelper.MAX_LEXICAL_CATEGORY_ID)
+            {
+                response.Data += ApiHelper.API_INPUT_LEX_ERROR;
+                isProblem = true;
+            }
+            if (word.GrammaticalGenderId == null || word.GrammaticalGenderId < 1 || word.GrammaticalGenderId > SettingsHelper.MAX_GRAMMATICAL_GENDER_ID)
+            {
+                response.Data += ApiHelper.API_INPUT_GRA_ERROR;
+                isProblem = true;
+            }
+            if (isProblem == true)
+            {
+                response.Success = false;
+                response.Error = true;
+                return false;
+            }
+            return true;
+        }
+
+        private void TrimAndLowerWords(WordDTO word)
+        {
+            word.English = word.English.Trim();
+            word.Spanish = word.Spanish.Trim();
+            word.English = word.English.ToLower();
+            word.Spanish = word.Spanish.ToLower();
         }
     }
 }
