@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using SpanishWords.Models;
 using System.Security.Cryptography;
 using SpanishWords.EntityFramework.Helpers;
-
+using AutoMapper;
 
 namespace EFDataAccess.Repositories
 {
@@ -13,11 +13,13 @@ namespace EFDataAccess.Repositories
     {
         private readonly WordsContext _db;
         private readonly ILogger<WordRepository> _logger;
+        private readonly IMapper _mapper;
 
-        public WordRepository(WordsContext db, ILogger<WordRepository> logger)
+        public WordRepository(WordsContext db, ILogger<WordRepository> logger, IMapper mapper)
         {
             _db = db;
             _logger = logger;
+            _mapper = mapper;
         }
 
         public Statistic CreateAndAddStatistic(int numberOfAnswersToLearnTheWord)
@@ -255,25 +257,16 @@ namespace EFDataAccess.Repositories
         public List<WordDTO> GetWordDTOsByWordText(string word, bool isEnglish)
         {
             List<WordDTO> result;
+            List<Word> words;
             try
             {
-                result = _db.Words
+                words = _db.Words
+                    .Include(n => n.Statistic)
                     .Where(n => isEnglish ? n.English == word : n.Spanish == word)
                     .Where(n => n.Statistic.DeleteTime == null)
-                    .Select(n => new WordDTO()
-                    {
-                        English = n.English,
-                        Spanish = n.Spanish,
-                        GrammaticalGenderId = n.GrammaticalGenderId,
-                        LexicalCategoryId = n.LexicalCategoryId,
-                        Statistic = new StatisticDTO()
-                        {
-                            CreateDate = n.Statistic.CreateDate,
-                            LastUpdated = n.Statistic.LastUpdated,
-                            DeleteTime = n.Statistic.DeleteTime,
-                            CorrectAnswersToLearn = n.Statistic.CorrectAnswersToLearn
-                        }
-                    }).ToList();
+                    .ToList();
+
+                result = _mapper.Map <List<WordDTO>>(words);
             }
             catch (Exception e)
             {

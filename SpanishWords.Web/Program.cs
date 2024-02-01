@@ -29,6 +29,7 @@ namespace SpanishWords.Web
                 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<WordsContext>();
                 builder.Services.AddScoped<IWordRepository, WordRepository>();
                 builder.Services.AddScoped<IStatsRepository, StatsRepository>();
+                builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 
                 var app = builder.Build();
