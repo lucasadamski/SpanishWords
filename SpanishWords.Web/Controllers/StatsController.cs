@@ -115,9 +115,12 @@ namespace SpanishWords.Web.Controllers
         }
         private string GenerateStringFromAverageTime(TimeSpan averageTime)
         {
-            if ((int)averageTime.TotalDays != 0) return $"{(int)averageTime.TotalDays} days";
-            else if (averageTime.Hours != 0) return $"{averageTime.Hours} hours";
-            else return $"{averageTime.Minutes} minutes";
+            if (averageTime.TotalDays >= 1.0) 
+                return $"{(int)averageTime.TotalDays} days";
+            if (averageTime.TotalHours >= 1.0) 
+                return $"{(int)averageTime.TotalHours} hours";
+            
+            return $"{(int)averageTime.TotalMinutes} minutes";
         }
         private double SetAverageQuestionCountPerWord(StatsViewModel stats, string userId)
         {
