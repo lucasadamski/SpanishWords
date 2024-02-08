@@ -29,7 +29,6 @@ namespace SpanishWords.Web.Controllers
             {
                 _logger.LogError(ExceptionHelper.METHOD_EMPTY_PARAMETER);
                 response.APIResponse.SetAllFields(ApiHelper.API_INPUT_PROCESS_ERROR, success: false, error: true);
-                response.Words = new List<WordDTO>();
                 return response;
             }
             response.Words = GetWords(word, true);
@@ -47,7 +46,6 @@ namespace SpanishWords.Web.Controllers
             {
                 _logger.LogError(ExceptionHelper.METHOD_EMPTY_PARAMETER);
                 response.APIResponse.SetAllFields(ApiHelper.API_INPUT_PROCESS_ERROR, success: false, error: true);
-                response.Words = new List<WordDTO>();
                 return response;
             }
             response.Words = GetWords(word, false);

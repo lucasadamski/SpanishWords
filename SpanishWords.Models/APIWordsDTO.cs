@@ -9,7 +9,7 @@ namespace SpanishWords.Models
     public class APIWordsDTO
     {
         public APIResponseInfo APIResponse { get; set; }
-        public List<WordDTO> Words { get; set; }
+        public List<WordDTO> Words { get; set; } = new List<WordDTO>();
 
         public APIWordsDTO()
         {
