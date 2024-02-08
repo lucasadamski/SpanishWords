@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SpanishWords.Models
+namespace SpanishWords.Models.DTOs
 {
     public class WordDTO
     {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SpanishWords.Models
+namespace SpanishWords.Models.Tables
 {
     public class StudyEntry
     {

@@ -2,7 +2,8 @@
 using EFDataAccess.Repositories.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using SpanishWords.Models;
+using SpanishWords.Models.DTOs;
+using SpanishWords.Models.Tables;
 using SpanishWords.Web.Helpers;
 
 namespace SpanishWords.Web.Controllers

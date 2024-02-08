@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using SpanishWords.Models.DTOs;
+using SpanishWords.Models.Tables;
 
 namespace SpanishWords.Models
 {

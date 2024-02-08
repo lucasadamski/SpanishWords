@@ -1,5 +1,4 @@
 ﻿using EFDataAccess.DataAccess;
-using SpanishWords.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SpanishWords.Web.Models;
@@ -10,6 +9,7 @@ using System.Security.Claims;
 using SpanishWords.EntityFramework.Repositories.Infrastructure;
 using SpanishWords.EntityFramework.Repositories;
 using SpanishWords.Web.Helpers;
+using SpanishWords.Models.Tables;
 
 namespace SpanishWords.Web.Controllers
 {

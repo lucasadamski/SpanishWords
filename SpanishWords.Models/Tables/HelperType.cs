@@ -6,19 +6,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SpanishWords.Models
+namespace SpanishWords.Models.Tables
 {
-    public class GrammaticalGender
+    public class HelperType
     {
         public int Id { get; set; }
         [Required]
         [MaxLength(9)]
         [Column(TypeName = "varchar(9)")]
         public string Name { get; set; }
+        public ICollection<StudyEntry> StudyEntry { get; set; }
 
-        /***********************
-        *       Realtions     *
-        * *********************/
-        public ICollection<Word> Words { get; set; }
     }
 }

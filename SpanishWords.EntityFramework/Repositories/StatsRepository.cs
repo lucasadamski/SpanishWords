@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SpanishWords.EntityFramework.Helpers;
 using SpanishWords.EntityFramework.Repositories.Infrastructure;
-using SpanishWords.Models;
+using SpanishWords.Models.Tables;
 
 namespace SpanishWords.EntityFramework.Repositories
 {

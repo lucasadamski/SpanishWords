@@ -1,13 +1,13 @@
 ﻿using EFDataAccess.Repositories.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using SpanishWords.EntityFramework.Helpers;
-using SpanishWords.Models;
 using SpanishWords.Web.Helpers;
 using SpanishWords.Web.Models;
 using System.Security.Claims;
 using System.Text;
 using SpanishWords.EntityFramework.Repositories;
 using SpanishWords.EntityFramework.Repositories.Infrastructure;
+using SpanishWords.Models.Tables;
 
 
 /*

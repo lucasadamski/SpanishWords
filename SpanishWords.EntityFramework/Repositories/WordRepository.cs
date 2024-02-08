@@ -2,10 +2,11 @@
 using EFDataAccess.Repositories.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using SpanishWords.Models;
 using System.Security.Cryptography;
 using SpanishWords.EntityFramework.Helpers;
 using AutoMapper;
+using SpanishWords.Models.DTOs;
+using SpanishWords.Models.Tables;
 
 namespace EFDataAccess.Repositories
 {

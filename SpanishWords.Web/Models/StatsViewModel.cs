@@ -1,4 +1,4 @@
-﻿using SpanishWords.Models;
+﻿using SpanishWords.Models.Tables;
 
 namespace SpanishWords.Web.Models
 {
