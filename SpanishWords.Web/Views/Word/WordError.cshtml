@@ -1,8 +1,24 @@
-﻿<h1>Ups! Sorry, something went wrong...</h1>
+﻿@model AddWordErrorViewModel
 
-<p>
-    We have some technical problem here, we are working as fast as we can to solve it.
-</p>
-<p>
-    We are real sorry for this inconvinience. If you have any questions contact support team <a href="https://www.technicalsupport.com/">here</a>.
-</p>
+@if(@Model.Messages.Count() == 0)
+{
+    <h1>Ups! Sorry, something went wrong...</h1>
+    <p>
+        We have some technical problem here, we are working as fast as we can to 
+        solve it.
+    </p>
+    <p>
+        We are real sorry for this inconvinience. If you have any questions contact
+        support team <a href="https://www.technicalsupport.com/">here</a>.
+    </p>
+}
+else
+{
+    <h1>@Model.MessageTitle</h1>
+    foreach (var message in Model.Messages)
+    {
+        <p>
+            @message
+        </p>
+    }    
+}

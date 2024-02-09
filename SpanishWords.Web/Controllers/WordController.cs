@@ -21,6 +21,8 @@ namespace SpanishWords.Web.Controllers
         private IStatsRepository _statsRepository;
         private const int CORRECT_ANSWERS_TO_LEARN = 3;
         private readonly ILogger<WordController> _logger;
+        private AddWordErrorViewModel _addWordErrorViewModel = new AddWordErrorViewModel();
+        
 
         public WordController(IWordRepository wordRepository, IStatsRepository statsRepository, ILogger<WordController> logger)
         {
@@ -67,13 +69,10 @@ namespace SpanishWords.Web.Controllers
         [HttpPost]
         public IActionResult Add(WordViewModel wordViewModel)
         {
-            if (wordViewModel.Word.Spanish == null || wordViewModel.Word.Spanish.Trim() == "" 
-                || wordViewModel.Word.English == null || wordViewModel.Word.English.Trim() == "" 
-                || wordViewModel.Word.GrammaticalGenderId == null || wordViewModel.Word.LexicalCategoryId == null
-                || wordViewModel.Word.GrammaticalGenderId == 0 || wordViewModel.Word.LexicalCategoryId == 0)
+            if (CheckIfAddedWordIsValid(wordViewModel) != true)
             {
                 _logger.LogError(ExceptionHelper.EMPTY_VARIABLE);
-                return View("WordError");
+                return View("WordError", _addWordErrorViewModel); //todo: implement in view
             }
  
             wordViewModel.Word.Spanish = wordViewModel.Word.Spanish.Trim();
@@ -86,10 +85,38 @@ namespace SpanishWords.Web.Controllers
             if (_wordRepository.Add(wordViewModel.Word) == false)
             {
                 _logger.LogError(ExceptionHelper.DATABASE_CONNECTION_ERROR);
-                return View("WordError");
+                return View("WordError", _addWordErrorViewModel);
             }
 
             return RedirectToAction("Add");
+        }
+
+        private bool CheckIfAddedWordIsValid(WordViewModel wordViewModel)
+        {
+            _addWordErrorViewModel.ClearMessages();
+            _addWordErrorViewModel.MessageTitle = ErrorViewMessageHelper.ADD_WORD_TITLE_MESSAGE;
+            bool isValid = true;
+            if (wordViewModel.Word.Spanish == null || wordViewModel.Word.Spanish.Trim() == "")
+            {
+                _addWordErrorViewModel.Messages.Add(ErrorViewMessageHelper.ADD_WORD_SPANISH_WORD_ERROR);
+                isValid =  false;
+            }
+            if (wordViewModel.Word.English == null || wordViewModel.Word.English.Trim() == "")
+            {
+                _addWordErrorViewModel.Messages.Add(ErrorViewMessageHelper.ADD_WORD_ENGLISH_WORD_ERROR);
+                isValid = false;
+            }
+            if (wordViewModel.Word.GrammaticalGenderId == null || wordViewModel.Word.LexicalCategoryId == null)
+            {
+                _addWordErrorViewModel.Messages.Add(ErrorViewMessageHelper.ADD_WORD_GRAMMATICAL_ERROR);
+                isValid = false;
+            }
+            if (wordViewModel.Word.GrammaticalGenderId == 0 || wordViewModel.Word.LexicalCategoryId == 0)
+            {
+                _addWordErrorViewModel.Messages.Add(ErrorViewMessageHelper.ADD_WORD_LEXICAL_ERROR);
+                isValid = false;
+            }
+            return isValid;
         }
         public IActionResult Edit(int id)
         {
