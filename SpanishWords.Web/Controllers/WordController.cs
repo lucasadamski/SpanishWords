@@ -10,6 +10,7 @@ using SpanishWords.EntityFramework.Repositories.Infrastructure;
 using SpanishWords.EntityFramework.Repositories;
 using SpanishWords.Web.Helpers;
 using SpanishWords.Models.Tables;
+using SpanishWords.Models.DTOs;
 
 namespace SpanishWords.Web.Controllers
 {
@@ -79,8 +80,9 @@ namespace SpanishWords.Web.Controllers
             wordViewModel.Word.English = wordViewModel.Word.English.Trim();
 
             wordViewModel.Word.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            wordViewModel.Word.StatisticId = _wordRepository.CreateAndAddStatistic(CORRECT_ANSWERS_TO_LEARN).Id;
-            if (wordViewModel.Word.StatisticId == -1) return View("WordError");
+            CreateStatisticDTO createdStatisticDTO = _wordRepository.CreateStatistic(CORRECT_ANSWERS_TO_LEARN);
+            wordViewModel.Word.StatisticId = createdStatisticDTO.Statistic.Id;
+            if (createdStatisticDTO.Success == false) return View("WordError", _addWordErrorViewModel);
 
             if (_wordRepository.Add(wordViewModel.Word) == false)
             {
@@ -144,7 +146,7 @@ namespace SpanishWords.Web.Controllers
             if (_wordRepository.Edit(model.Word) == false)
             {
                 _logger.LogError(ExceptionHelper.DATABASE_CONNECTION_ERROR);
-                return View("WordError");
+                return View("WordError", _addWordErrorViewModel);
             }
 
             return RedirectToAction("Index", "Word");
@@ -156,7 +158,7 @@ namespace SpanishWords.Web.Controllers
             if (word == null || _wordRepository.Delete(word) == false)
             {
                 _logger.LogError(ExceptionHelper.DATABASE_CONNECTION_ERROR);
-                return View("WordError");
+                return View("WordError", _addWordErrorViewModel);
             }
            
             return RedirectToAction("Index", "Word");
@@ -166,7 +168,7 @@ namespace SpanishWords.Web.Controllers
             if (_wordRepository.RestartProgressForAll(User.FindFirstValue(ClaimTypes.NameIdentifier)) == false)
             {
                 _logger.LogError(ExceptionHelper.DATABASE_CONNECTION_ERROR);
-                return View("WordError");
+                return View("WordError", _addWordErrorViewModel);
             }
             
             WordViewModel wordViewModel = new WordViewModel();
@@ -178,7 +180,7 @@ namespace SpanishWords.Web.Controllers
             if (_wordRepository.RestartProgress(id) == false)
             {
                 _logger.LogError(ExceptionHelper.DATABASE_CONNECTION_ERROR);
-                return View("WordError");
+                return View("WordError", _addWordErrorViewModel);
             }
             
             WordViewModel wordViewModel = new WordViewModel();

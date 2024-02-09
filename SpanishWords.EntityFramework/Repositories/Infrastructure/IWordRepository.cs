@@ -17,7 +17,7 @@ namespace EFDataAccess.Repositories.Infrastructure
         public IEnumerable<Word> GetAllWords();
         bool Edit(Word word);
         bool Delete(Word word);
-        Statistic CreateAndAddStatistic(int numberOfAnswersToLearnTheWord);
+        public CreateStatisticDTO CreateStatistic(int numberOfAnswersToLearnTheWord);
         public IEnumerable<GrammaticalGender> GetGrammaticalGenders();
         public IEnumerable<LexicalCategory> GetLexicalCategories();
         public Word GetRandomWord();

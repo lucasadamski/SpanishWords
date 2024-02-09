@@ -23,8 +23,10 @@ namespace EFDataAccess.Repositories
             _mapper = mapper;
         }
 
-        public Statistic CreateAndAddStatistic(int numberOfAnswersToLearnTheWord)
+        public CreateStatisticDTO CreateStatistic(int numberOfAnswersToLearnTheWord) // statdto + bool
         {
+            CreateStatisticDTO result = new CreateStatisticDTO();
+
             DateTime dateTimeNow = new DateTime();
             dateTimeNow = DateTime.Now;
             Statistic statistic = new Statistic()
@@ -42,9 +44,9 @@ namespace EFDataAccess.Repositories
             catch (Exception e)
             {
                 _logger.LogError(DBExceptionHelper.DATABASE_WRITE_ERROR);
-                statistic = new Statistic() { Id = -1 };
+                return new CreateStatisticDTO() { Statistic = new Statistic(), Success = false };
             }
-            return statistic;
+            return new CreateStatisticDTO() { Statistic = statistic, Success = true};
         }
         public IEnumerable<Word> GetAllWords(string userId)
         {

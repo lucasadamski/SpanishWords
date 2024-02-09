@@ -57,7 +57,7 @@ namespace SpanishWords.Web.Controllers
 
         //Skopiuj poniższy JSON do zapytania do postman.com, w MSSQL Server Managment widać że program dodał słowo do DB
         //{"spanish":"apiTestWord","english":"a","lexicalCategoryId":1,"grammaticalGenderId":1}
-        //localhost:7057/api/TranslateApi/addtranslation
+        // https://localhost:7057/api/TranslateApi/addtranslation
         [HttpPost("addtranslation")]
         public APIResponseInfo AddTranslation(WordDTO apiWord)
         {
@@ -83,9 +83,9 @@ namespace SpanishWords.Web.Controllers
         }
 
         private Word CreateWordFromWordDTO(WordDTO word)
-        {
-            int statisticId = _wordRepository.CreateAndAddStatistic(ApiHelper.API_TIMES_CORRECT_TO_LEARN).Id;
-            if (statisticId == -1)
+        {            
+            CreateStatisticDTO createStatisticDTO = _wordRepository.CreateStatistic(ApiHelper.API_TIMES_CORRECT_TO_LEARN);
+            if (createStatisticDTO.Success == false)
             {
                 _logger.LogError(ExceptionHelper.DATABASE_CONNECTION_ERROR);
                 return new Word();
@@ -98,7 +98,7 @@ namespace SpanishWords.Web.Controllers
                 LexicalCategoryId = word.LexicalCategoryId,
                 GrammaticalGenderId = word.GrammaticalGenderId,
                 UserId = ApiHelper.API_USER_ID,
-                StatisticId = _wordRepository.CreateAndAddStatistic(ApiHelper.API_TIMES_CORRECT_TO_LEARN).Id
+                StatisticId = createStatisticDTO.Statistic.Id
             };
         }
 
