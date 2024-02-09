@@ -49,15 +49,8 @@ namespace EFDataAccess.Repositories
             return new CreateStatisticDTO() { Statistic = statistic, Success = true};
         }
         public IEnumerable<Word> GetAllWords(string userId)
-        {
-            if (userId == null)
-            {
-                _logger.LogError(DBExceptionHelper.EMPTY_VARIABLE);
-                return new List<Word>();
-            }
-
+        {         
             IEnumerable<Word> result;
-
             try
             {
                 result = _db.Words.Include(a => a.GrammaticalGender) 
@@ -77,7 +70,6 @@ namespace EFDataAccess.Repositories
         public IEnumerable<Word> GetAllWords()
         {
             IEnumerable<Word> result;
-
             try
             {
                 result = _db.Words.Include(a => a.GrammaticalGender)

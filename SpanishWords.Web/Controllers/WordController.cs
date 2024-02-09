@@ -36,16 +36,16 @@ namespace SpanishWords.Web.Controllers
         {
             WordViewModel wordViewModel = new WordViewModel();
 
-            wordViewModel.Words = _wordRepository.GetAllWords(User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList(); //string z userId
+            wordViewModel.Words = _wordRepository.GetAllWords(User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList();
 
-            for (int i = 0; i < wordViewModel.Words.Count(); i++)
+            foreach (Word word in wordViewModel.Words)
             {
-                wordViewModel.TimesCorrect.Add(_wordRepository.GetWordsTimesCorrect(wordViewModel.Words.ElementAt(i).Id));
-                wordViewModel.TimesIncorrect.Add(_wordRepository.GetWordsTimesIncorrect(wordViewModel.Words.ElementAt(i).Id));
+                wordViewModel.TimesCorrect.Add(_wordRepository.GetWordsTimesCorrect(word.Id));
+                wordViewModel.TimesIncorrect.Add(_wordRepository.GetWordsTimesIncorrect(word.Id));
                 wordViewModel.TimesTrained.Add(wordViewModel.TimesCorrect.Last() + wordViewModel.TimesIncorrect.Last());
             }
 
-            wordViewModel.TimesCorrectForLearning = 3;
+            wordViewModel.TimesCorrectForLearning = SettingsHelper.CORRECT_NUMBER_FOR_LEARNING;
 
             return View(wordViewModel);
         }
