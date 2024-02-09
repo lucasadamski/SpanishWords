@@ -17,13 +17,10 @@ namespace SpanishWords.Web.Controllers
     [Authorize]
     public class WordController : Controller
     {
-
         private IWordRepository _wordRepository;
         private IStatsRepository _statsRepository;
-        private const int CORRECT_ANSWERS_TO_LEARN = 3;
         private readonly ILogger<WordController> _logger;
-        private AddWordErrorViewModel _addWordErrorViewModel = new AddWordErrorViewModel();
-        
+        private AddWordErrorViewModel _addWordErrorViewModel = new AddWordErrorViewModel();        
 
         public WordController(IWordRepository wordRepository, IStatsRepository statsRepository, ILogger<WordController> logger)
         {
@@ -80,7 +77,7 @@ namespace SpanishWords.Web.Controllers
             wordViewModel.Word.English = wordViewModel.Word.English.Trim();
 
             wordViewModel.Word.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            CreateStatisticDTO createdStatisticDTO = _wordRepository.CreateStatistic(CORRECT_ANSWERS_TO_LEARN);
+            CreateStatisticDTO createdStatisticDTO = _wordRepository.CreateStatistic(SettingsHelper.CORRECT_NUMBER_FOR_LEARNING);
             wordViewModel.Word.StatisticId = createdStatisticDTO.Statistic.Id;
             if (createdStatisticDTO.Success == false) return View("WordError", _addWordErrorViewModel);
 
@@ -198,7 +195,7 @@ namespace SpanishWords.Web.Controllers
                 wordViewModel.TimesIncorrect.Add(_wordRepository.GetWordsTimesIncorrect(id));
                 wordViewModel.TimesTrained.Add(_statsRepository.GetWordsTotalTrainedTimes(id));
             }
-            wordViewModel.TimesCorrectForLearning = CORRECT_ANSWERS_TO_LEARN;
+            wordViewModel.TimesCorrectForLearning = SettingsHelper.CORRECT_NUMBER_FOR_LEARNING;
         }
     }
 }
