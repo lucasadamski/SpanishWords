@@ -33,14 +33,7 @@ namespace SpanishWords.Web.Controllers
         {
             WordViewModel wordViewModel = new WordViewModel();
 
-            wordViewModel.Words = _wordRepository.GetAllWords(User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList();
-
-            foreach (Word word in wordViewModel.Words)
-            {
-                wordViewModel.TimesCorrect.Add(_wordRepository.GetWordsTimesCorrect(word.Id));
-                wordViewModel.TimesIncorrect.Add(_wordRepository.GetWordsTimesIncorrect(word.Id));
-                wordViewModel.TimesTrained.Add(wordViewModel.TimesCorrect.Last() + wordViewModel.TimesIncorrect.Last());
-            }
+            wordViewModel.WordsView = _wordRepository.GetAllWordsWithStatsFromView(User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList();
 
             wordViewModel.TimesCorrectForLearning = SettingsHelper.CORRECT_NUMBER_FOR_LEARNING;
 

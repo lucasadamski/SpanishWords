@@ -26,31 +26,31 @@
                     
         <tbody>
                 @{
-                    for (int i = 0; i < Model.Words.Count(); i++)
+                    foreach(var word in Model.WordsView)
                     {
                         string tableBackgroudClass;
-                        if (@Model.TimesCorrect.ElementAt(i) >= Model.TimesCorrectForLearning) tableBackgroudClass = "bg-success";
+                        if (word.CorrectAnswers >= Model.TimesCorrectForLearning) tableBackgroudClass = "bg-success";
                         else tableBackgroudClass = "bg-warning";
                         <tr>
-                                <th scope="row">@(i+1)</th>
-                                <td><p>@Model.Words[i].English</p></td>
-                                <td>@Model.Words.ElementAt(i).Spanish</td>
-                                <td>@Model.Words.ElementAt(i).GrammaticalGender?.Name</td>
-                                <td>@Model.Words.ElementAt(i).LexicalCategory?.Name</td>
-                                <td class="@tableBackgroudClass">@Model.TimesCorrect.ElementAt(i)</td>
-                                <td>@Model.TimesIncorrect.ElementAt(i)</td> <!---KLAUDIA: Nie mogę zmienić na foreach gdyż mam inną listę w modelu --->
-                                <td>@Model.TimesTrained.ElementAt(i)</td>
+                                <th scope="row">-</th>
+                                <td><p>@word.English</p></td>
+                            <td>@word.Spanish</td>
+                            <td>@word.GenderName</td>
+                            <td>@word.LexicalName</td>
+                            <td class="@tableBackgroudClass">@word.CorrectAnswers</td>
+                            <td>@word.IncorrectAnswers</td>
+                            <td>@(word.CorrectAnswers + word.IncorrectAnswers)</td>
                                 <td>
-                                    <form asp-controller="Word" asp-action="Edit" asp-route-id="@Model.Words[i].Id" method="GET">
+                                    <form asp-controller="Word" asp-action="Edit" asp-route-id="@word.WordId" method="GET">
                                         <button type="submit" class="btn btn-primary">Edit</button>
                                     </form>
                                 </td>
                                 <td>
-                                    <button onclick="deleteOneWord(@Model.Words.ElementAt(i).Id)" class="btn btn-primary">Delete</button>
+                                <button onclick="deleteOneWord(@word.WordId)" class="btn btn-primary">Delete</button>
                                 </td>
                                 <td>
                                     <!--KLADUIA please help: Nie wiem jak zrobić żeby ajax odświeżył widok po kliknięciu w przycisk-->
-                                    <button onclick="resetProgressForOneWord(@Model.Words.ElementAt(i).Id)" class="btn btn-primary">Reset Progress</button>
+                                <button onclick="resetProgressForOneWord(@word.WordId)" class="btn btn-primary">Reset Progress</button>
                                 </td>
                         </tr>
                     }
