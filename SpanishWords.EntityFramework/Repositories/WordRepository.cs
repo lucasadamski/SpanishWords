@@ -73,7 +73,6 @@ namespace EFDataAccess.Repositories
             try
             {
                 var result = _db.vWordsStats.Where(n => n.UserId == userId).ToList();
-                result = ChangeNullAnswersToZero(result);
                 return result;
             }
             catch (Exception e)
@@ -81,16 +80,7 @@ namespace EFDataAccess.Repositories
                 _logger.LogError(DBExceptionHelper.EF_CANNOT_READ_VIEW, DBExceptionHelper.EF_CANNOT_READ_VIEW);
                 return new List<v_Words_Stats>();
             }
-        }
-        private List<v_Words_Stats> ChangeNullAnswersToZero(List<v_Words_Stats> input)
-        {
-            for (int i = 0; i < input.Count(); i++)
-            {
-                if (input.ElementAt(i).CorrectAnswers == null) input.ElementAt(i).CorrectAnswers = 0;
-                if (input.ElementAt(i).IncorrectAnswers == null) input.ElementAt(i).IncorrectAnswers = 0;
-            }
-            return input;
-        }
+        }      
         public bool Add(Word? word)
         {
             try
