@@ -21,7 +21,7 @@ namespace EFDataAccess.Repositories
         {
             _db = db;
             _logger = logger;
-            _mapper = mapper;
+            _mapper = mapper;           
         }
 
         public CreateStatisticDTO CreateStatistic(int numberOfAnswersToLearnTheWord) // statdto + bool
@@ -96,7 +96,7 @@ namespace EFDataAccess.Repositories
             }
             catch (Exception e)
             {
-                _logger.LogError(DBExceptionHelper.EF_QUERY_ERROR + DBExceptionHelper.GetErrorMessage(e.Message));
+                _logger.LogError(DBExceptionHelper.EF_CANNOT_READ_VIEW, DBExceptionHelper.EF_CANNOT_READ_VIEW);
                 return new List<v_Words_Stats>();
             }
         }
