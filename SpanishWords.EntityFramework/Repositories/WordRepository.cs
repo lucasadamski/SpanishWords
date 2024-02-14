@@ -68,24 +68,6 @@ namespace EFDataAccess.Repositories
 
             return result;
         }
-        public IEnumerable<Word> GetAllWords()
-        {
-            IEnumerable<Word> result;
-            try
-            {
-                result = _db.Words.Include(a => a.GrammaticalGender)
-                    .Include(a => a.LexicalCategory)
-                    .Include(a => a.Statistic)
-                    .ToList();
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(DBExceptionHelper.EF_QUERY_ERROR + DBExceptionHelper.GetErrorMessage(e.Message));
-                return new List<Word>();
-            }
-
-            return result;
-        }
         public IEnumerable<v_Words_Stats> GetAllWordsWithStatsFromView(string userId)
         {
             try
