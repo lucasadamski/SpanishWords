@@ -20,13 +20,15 @@ namespace SpanishWords.Web.Controllers
         private IWordRepository _wordRepository;
         private IStatsRepository _statsRepository;
         private readonly ILogger<WordController> _logger;
-        private AddWordErrorViewModel _addWordErrorViewModel = new AddWordErrorViewModel();        
+        private AddWordErrorViewModel _addWordErrorViewModel = new AddWordErrorViewModel();
+        private IConfiguration _configuration;
 
-        public WordController(IWordRepository wordRepository, IStatsRepository statsRepository, ILogger<WordController> logger)
+        public WordController(IWordRepository wordRepository, IStatsRepository statsRepository, ILogger<WordController> logger, IConfiguration configuration)
         {
             _wordRepository = wordRepository;
             _statsRepository = statsRepository;
             _logger = logger;
+            _configuration = configuration;
         }
 
         public IActionResult Index()
@@ -35,7 +37,7 @@ namespace SpanishWords.Web.Controllers
 
             wordViewModel.WordsView = _wordRepository.GetAllWordsWithStatsFromView(User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList();
 
-            wordViewModel.TimesCorrectForLearning = SettingsHelper.CORRECT_NUMBER_FOR_LEARNING;
+            wordViewModel.TimesCorrectForLearning = SettingsHelper.GetCorrectNumberForLearning(_configuration);
 
             return View(wordViewModel);
         }
@@ -70,7 +72,7 @@ namespace SpanishWords.Web.Controllers
             wordViewModel.Word.English = wordViewModel.Word.English.Trim();
 
             wordViewModel.Word.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            CreateStatisticDTO createdStatisticDTO = _wordRepository.CreateStatistic(SettingsHelper.CORRECT_NUMBER_FOR_LEARNING);
+            CreateStatisticDTO createdStatisticDTO = _wordRepository.CreateStatistic(SettingsHelper.GetCorrectNumberForLearning(_configuration));
             wordViewModel.Word.StatisticId = createdStatisticDTO.Statistic.Id;
             if (createdStatisticDTO.Success == false) return View("WordError", _addWordErrorViewModel);
 

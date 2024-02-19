@@ -8,6 +8,7 @@ using System.Text;
 using SpanishWords.EntityFramework.Repositories;
 using SpanishWords.EntityFramework.Repositories.Infrastructure;
 using SpanishWords.Models.Tables;
+using System.Configuration;
 
 
 /*
@@ -28,12 +29,14 @@ namespace SpanishWords.Web.Controllers
         private IStatsRepository _statsRepository;
         private readonly ILogger<StatsController> _logger;
         private string _userId;
+        private IConfiguration _configuration;
 
-        public StatsController(IWordRepository wordRepository, IStatsRepository statsRepository, ILogger<StatsController> logger)
+        public StatsController(IWordRepository wordRepository, IStatsRepository statsRepository, ILogger<StatsController> logger, IConfiguration configuration)
         {
             _wordRepository = wordRepository;
             _statsRepository = statsRepository;
             _logger = logger;
+            _configuration = configuration;
         }
         public IActionResult Index()
         {
@@ -60,7 +63,7 @@ namespace SpanishWords.Web.Controllers
             int learntWords;
             int totalWords;
 
-            notLearntWords = _statsRepository.GetAllNotLearntWords(userId, SettingsHelper.CORRECT_NUMBER_FOR_LEARNING).Count();
+            notLearntWords = _statsRepository.GetAllNotLearntWords(userId, SettingsHelper.GetCorrectNumberForLearning(_configuration)).Count();
             totalWords = _wordRepository.GetAllWords(userId).Count();
             learntWords = totalWords - notLearntWords;
 
@@ -75,7 +78,7 @@ namespace SpanishWords.Web.Controllers
                 _logger.LogError(DBExceptionHelper.EMPTY_VARIABLE);
                 return new Word();
             }
-            List<Word> learntWords = _statsRepository.GetAllLearntWords(userId, SettingsHelper.CORRECT_NUMBER_FOR_LEARNING).ToList();
+            List<Word> learntWords = _statsRepository.GetAllLearntWords(userId, SettingsHelper.GetCorrectNumberForLearning(_configuration)).ToList();
             if(learntWords.Count() == 0)
             {
                 return new Word()
@@ -89,12 +92,12 @@ namespace SpanishWords.Web.Controllers
         public string SetAverageTimeForLearningPerWord(StatsViewModel stats, string userId)
         {
             IEnumerable<IGrouping<int, StudyEntry>> groupsOfLearntStudyEntries =
-                _statsRepository.GetGroupsOfLearntStudyEntries(userId, SettingsHelper.CORRECT_NUMBER_FOR_LEARNING);
+                _statsRepository.GetGroupsOfLearntStudyEntries(userId, SettingsHelper.GetCorrectNumberForLearning(_configuration));
 
             if (groupsOfLearntStudyEntries.Count() == 0)            
                 return MessageHelper.NO_WORDS_LEARNT;            
 
-            TimeSpan averageTime = GenerateAverageTime(groupsOfLearntStudyEntries, SettingsHelper.CORRECT_NUMBER_FOR_LEARNING);
+            TimeSpan averageTime = GenerateAverageTime(groupsOfLearntStudyEntries, SettingsHelper.GetCorrectNumberForLearning(_configuration));
 
             return GenerateStringFromAverageTime(averageTime);
         }
