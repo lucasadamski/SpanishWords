@@ -8,7 +8,10 @@
 
         public static int GetCorrectNumberForLearning(IConfiguration config)
         {
-            if (config == null) return 0;
+            if (config == null)
+            {
+                return CORRECT_NUMBER_FOR_LEARNING;
+            }
             return config.GetValue<int>("NumberForCorrectsAnswersToLearn");
         }
     }
