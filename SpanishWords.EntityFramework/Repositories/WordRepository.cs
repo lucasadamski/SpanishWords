@@ -7,6 +7,7 @@ using SpanishWords.EntityFramework.Helpers;
 using AutoMapper;
 using SpanishWords.Models.DTOs;
 using SpanishWords.Models.Tables;
+using SpanishWords.Models.Views;
 
 namespace EFDataAccess.Repositories
 {
@@ -20,7 +21,7 @@ namespace EFDataAccess.Repositories
         {
             _db = db;
             _logger = logger;
-            _mapper = mapper;
+            _mapper = mapper;           
         }
 
         public CreateStatisticDTO CreateStatistic(int numberOfAnswersToLearnTheWord) // statdto + bool
@@ -67,24 +68,19 @@ namespace EFDataAccess.Repositories
 
             return result;
         }
-        public IEnumerable<Word> GetAllWords()
+        public IEnumerable<v_Words_Stats> GetAllWordsWithStatsFromView(string userId)
         {
-            IEnumerable<Word> result;
             try
             {
-                result = _db.Words.Include(a => a.GrammaticalGender)
-                    .Include(a => a.LexicalCategory)
-                    .Include(a => a.Statistic)
-                    .ToList();
+                var result = _db.vWordsStats.Where(n => n.UserId == userId).ToList();
+                return result;
             }
             catch (Exception e)
             {
-                _logger.LogError(DBExceptionHelper.EF_QUERY_ERROR + DBExceptionHelper.GetErrorMessage(e.Message));
-                return new List<Word>();
+                _logger.LogError(DBExceptionHelper.EF_CANNOT_READ_VIEW, DBExceptionHelper.EF_CANNOT_READ_VIEW);
+                return new List<v_Words_Stats>();
             }
-
-            return result;
-        }
+        }      
         public bool Add(Word? word)
         {
             try

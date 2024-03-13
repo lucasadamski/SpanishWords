@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using SpanishWords.Models.Tables;
+using SpanishWords.Models.Views;
 
 namespace EFDataAccess.DataAccess
 {
@@ -23,6 +24,7 @@ namespace EFDataAccess.DataAccess
         public DbSet<StudyEntry> StudyEntries { get; set; }
         public DbSet<AnswerType> AnswerTypes { get; set; }
         public DbSet<HelperType> HelperTypes { get; set; }
+        public virtual DbSet<v_Words_Stats> vWordsStats{ get; set; }
 
 
         public WordsContext(DbContextOptions<WordsContext> options) : base(options) { }
@@ -31,6 +33,13 @@ namespace EFDataAccess.DataAccess
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.
+                Entity<v_Words_Stats>(eb =>
+                {
+                    eb.HasNoKey();
+                    eb.ToView("v_Words_Stats");
+                });
 
             modelBuilder.Entity<ApplicationUser>().Property(e => e.FirstName).HasMaxLength(250);
             modelBuilder.Entity<ApplicationUser>().Property(e => e.LastName).HasMaxLength(250);

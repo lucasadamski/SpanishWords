@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using SpanishWords.Models.Tables;
+using SpanishWords.Models.Views;
 
 namespace SpanishWords.Web.Models
 {
@@ -7,6 +8,7 @@ namespace SpanishWords.Web.Models
     {
   
         public List<Word> Words = new List<Word>();
+        public List<v_Words_Stats> WordsView = new List<v_Words_Stats>();
 
         public Word Word { get; set; } = new Word();
 
