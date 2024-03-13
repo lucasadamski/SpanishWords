@@ -11,6 +11,7 @@ using SpanishWords.EntityFramework.Repositories;
 using SpanishWords.Web.Helpers;
 using SpanishWords.Models.Tables;
 using SpanishWords.Models.DTOs;
+using SpanishWords.Models.Views;
 
 namespace SpanishWords.Web.Controllers
 {
@@ -31,11 +32,15 @@ namespace SpanishWords.Web.Controllers
             _configuration = configuration;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             WordViewModel wordViewModel = new WordViewModel();
 
-            wordViewModel.WordsView = _wordRepository.GetAllWordsWithStatsFromView(User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList();
+            Task<IEnumerable<v_Words_Stats>> wordsTask = _wordRepository.GetAllWordsWithStatsFromView(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            var words = await wordsTask;
+
+            wordViewModel.WordsView = words.ToList();
 
             wordViewModel.TimesCorrectForLearning = SettingsHelper.GetCorrectNumberForLearning(_configuration);
 

@@ -15,7 +15,7 @@ namespace EFDataAccess.Repositories.Infrastructure
         bool Add(Word word);
         Word GetWordById(int id);
         public IEnumerable<Word> GetAllWords(string userId);
-        public IEnumerable<v_Words_Stats> GetAllWordsWithStatsFromView(string userId);
+        public Task<IEnumerable<v_Words_Stats>> GetAllWordsWithStatsFromView(string userId);
         bool Edit(Word word);
         bool Delete(Word word);
         public CreateStatisticDTO CreateStatistic(int numberOfAnswersToLearnTheWord);

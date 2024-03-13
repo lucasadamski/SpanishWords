@@ -68,7 +68,7 @@ namespace EFDataAccess.Repositories
 
             return result;
         }
-        public IEnumerable<v_Words_Stats> GetAllWordsWithStatsFromView(string userId)
+        public async Task<IEnumerable<v_Words_Stats>> GetAllWordsWithStatsFromView(string userId)
         {
             try
             {
