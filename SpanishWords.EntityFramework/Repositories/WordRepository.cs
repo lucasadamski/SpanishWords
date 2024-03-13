@@ -68,7 +68,7 @@ namespace EFDataAccess.Repositories
 
             return result;
         }
-        public IEnumerable<v_Words_Stats> GetAllWordsWithStatsFromView(string userId)
+        public async Task<IEnumerable<v_Words_Stats>> GetAllWordsWithStatsFromView(string userId)
         {
             try
             {
@@ -123,7 +123,23 @@ namespace EFDataAccess.Repositories
             }
             return true;
         }
-        public Word? GetWordById(int id) => _db.Words.Where(a => a.Id == id).FirstOrDefault();            
+        //public Word? GetWordById(int id) => _db.Words.Where(a => a.Id == id).FirstOrDefault();
+
+        /*****************************
+         * Stored Procedure code:
+         * 
+            CREATE PROCEDURE dbo.GetWordById
+	            @WordId int
+            AS
+            BEGIN
+	            select * 
+	            from dbo.Words
+	            where Id = @WordId;
+            END
+            GO
+         * ***************************/
+        public Word? GetWordById(int id) => _db.Words.FromSqlRaw("EXEC [dbo].[GetWordById] {0}", id).ToList().FirstOrDefault();
+        
         public IEnumerable<GrammaticalGender> GetGrammaticalGenders()
         {
             try
