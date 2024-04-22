@@ -24,8 +24,7 @@ namespace SpanishWords.Web
                 var builder = WebApplication.CreateBuilder(args);
 
                 // Add services to the container.
-                builder.Logging.ClearProviders();
-                builder.Host.UseNLog();
+               
                 builder.Services.AddControllersWithViews();
                 builder.Services.AddDbContext<WordsContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
                 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<WordsContext>();
@@ -33,6 +32,8 @@ namespace SpanishWords.Web
                 builder.Services.AddScoped<IStatsRepository, StatsRepository>();
                 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+                builder.Logging.ClearProviders();
+                builder.Host.UseNLog();
 
                 var app = builder.Build();
 
